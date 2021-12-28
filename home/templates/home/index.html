@@ -1,0 +1,77 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block title %}
+    Home
+{% endblock %}
+
+
+{% block banner_slider %}
+<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="{% static 'assets/images/image3.png' %}" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'assets/images/image3.png' %}" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'assets/images/image3.png' %}" class="d-block w-100" alt="...">
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 mx-2">
+<!-- 
+  for k in context:
+        print("Brand = ", k)
+        for p in context[k]:
+            print("Product = ", p) -->
+    <!-- <ul>
+    {% for p in products %}
+      <li>{{p}}</li>
+    {% endfor %}
+    </ul>
+
+    <h5>Printing values</h5>
+    {% for p in products %}
+    <li>{{p.model}} {{p.discount_price}}</li>
+  {% endfor %} -->
+
+
+  {% for brand in brands|slice:"1" %}
+  <h3>{{brand}}</h3>
+  <div class="row row-cols-4">
+      {% for product in products|slice:":4" %}
+        <div class="card col mx-1" style="width: 18rem;">
+          <a href="{% url 'userproduct-details' 0 product.id %}">
+          <img src="{{product.image.url}}" class="card-img-top" alt="...">
+        </a>
+          <div class="card-body">
+            <h5 class="card-title">{{product.model}}</h5>
+            <p class="card-text">{{product.short_description}}</p>
+            <a href="#" class="btn btn-primary mx-1">Addto Cart</a>
+            <a href="#" class="btn btn-primary mx-1">Buy now</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+
+  
+  </div>
+
+</div>
+
+</div>
+
+{% endblock %}

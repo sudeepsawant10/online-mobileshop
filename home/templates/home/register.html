@@ -1,0 +1,97 @@
+{% extends 'home/layout.html' %}
+
+{% block title %}
+Register
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row my-3 ">
+        <div class="col-sm-6 offset-sm-3">
+            <h3>Customer Registration</h3>
+            <hr>
+
+            <form action='' method="POST" class="login100-form validate-form">
+                {% csrf_token %}
+
+                <!-- user_create is key we have passed thourgh views.py Register class through get -->
+                <!-- if fileds are not following our restirctions -->
+                {% if user_create.errors %}
+
+                {% for field in user_create %}
+                <!-- if error ocuures that is invalid inputs -->
+                {% for error in field.errors %}
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+                {% endfor %}
+
+                {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+
+                <div class="mb-3">
+                    <label class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" name="email"
+                     aria-describedby="emailHelp">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Contact</label>
+                    <input type="number" class="form-control" id="exampleInputEmail1" name="contact">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" name="user_name" value="">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password1">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" name="password2"
+                        >
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-control" name="first_name"
+                        >
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-control" name="last_name"
+                        >
+                </div>
+
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+
+                <div>
+                    <a href="" class="text-center">Already Have an Account?</a>
+                </div>
+
+            </form>
+
+            
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
