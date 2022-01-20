@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-9)6+x1dybv(11b3fp0w)5p12kz_^030%6$kjy)pu%a6=rjc0!h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['online-mobileshop.herokuapp.com', '127.0.0.1:8000']
+ALLOWED_HOSTS = ['online-mobileshop.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
@@ -88,9 +88,6 @@ DATABASES = {
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },

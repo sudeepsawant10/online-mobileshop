@@ -38,11 +38,11 @@ class CustomAccountManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.AutoField(primary_key=True)
     email = models.EmailField(_('email address'), unique=True, max_length=150)
-    user_name = models.CharField(max_length=8, unique=True)
+    user_name = models.CharField(max_length=15, unique=True)
     first_name = models.CharField(max_length=150, null=False, blank=False)
     last_name = models.CharField(max_length=150, null=True, blank=True)
     joinedOn = models.DateTimeField(default=timezone.now)
-    contact = models.CharField(max_length=10)
+    contact = models.CharField(max_length=10, unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 

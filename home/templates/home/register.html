@@ -12,23 +12,24 @@ Register
             <h3>Customer Registration</h3>
             <hr>
 
-            <form action='' method="POST" class="login100-form validate-form">
+            <form action="{% url 'register' %}" method="POST" >
                 {% csrf_token %}
 
                 <!-- user_create is key we have passed thourgh views.py Register class through get -->
                 <!-- if fileds are not following our restirctions -->
+                
                 {% if user_create.errors %}
 
                 {% for field in user_create %}
                 <!-- if error ocuures that is invalid inputs -->
-                {% for error in field.errors %}
-                <div class="alert alert-danger">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <strong>{{ error|escape }}</strong>
-                </div>
-                {% endfor %}
+                    {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                    {% endfor %}
                 {% endfor %}
 
                 {% for error in form.non_field_errors %}
@@ -44,8 +45,8 @@ Register
 
                 <div class="mb-3">
                     <label class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="exampleInputEmail1" name="email"
-                     aria-describedby="emailHelp">
+                    <input type="email" class="form-control" id="register-email" name="email"
+                     >
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Contact</label>
@@ -82,7 +83,7 @@ Register
                 <button type="submit" class="btn btn-primary">Sign Up</button>
 
                 <div>
-                    <a href="" class="text-center">Already Have an Account?</a>
+                    <a href="{% url 'login' %}" class="text-center">Already Have an Account?</a>
                 </div>
 
             </form>

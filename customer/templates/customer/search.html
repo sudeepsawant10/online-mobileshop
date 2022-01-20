@@ -1,0 +1,39 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block title %}
+
+{% endblock %}
+{% block content %}
+    <div class="container">
+      {% if products|length < 1 %}
+      <h3>Search Result:</h3>
+            <h4>No match founds</h4>
+            Your search query : <b>{{query}}</b> did not match any documents.
+        {% elif not query %}
+          <h4>Please type mobile name and features to search</h4>
+          Your search query : <b>{{query}}</b> did not match any documents.
+        {% else %}
+        <h3>Search Result:</h3>
+        <div class="row">
+            {% for product in products %}
+            <div class="col-md-4">
+                <div class="card text-center" style="width: 18rem;">
+                  <a href="{% url 'userproduct-details' 0 product.id %}">
+                  <img src="{{product.image.url}}" class="card-img-top w-50" alt="...">
+                </a>
+                  <div class="card-body">
+                    <h5 class="card-title">{{product.model}}</h5>
+                    <p class="card-text">{{product.short_description}}</p>
+                    <div class="inline">
+                      <a href="#" class="btn btn-primary mx-1">Addto Cart</a>
+                      <span>{{product.discount_price}}</span>
+                    </div>
+                    
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}

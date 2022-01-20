@@ -7,9 +7,9 @@ Register
 {% block content %}
 
 
-<div class="col-3 m-4">
+<div class="col-6 m-4">
 
-    <form action='' method="POST" class="login100-form validate-form">
+    <form action="{% url 'login' %}" method="POST" class="">
         {% csrf_token %}
         <!-- <span class="login100-form-title">
         </span> -->
@@ -43,8 +43,6 @@ Register
 
     </form>
     
-    
-
 </div>
 
 

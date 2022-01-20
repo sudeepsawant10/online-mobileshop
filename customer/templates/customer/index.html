@@ -3,6 +3,9 @@
 {% block title %}
 Home
 {% endblock %}
+{% block script %}
+ 
+{% endblock %}
 
 
 {% block banner_slider %}
@@ -30,11 +33,99 @@ Home
 {% endblock %}
 
 {% block content %}
-<h1>Hello {{user}}</h1>
-<div class="container-fluid mt-4 mx-2">
-  <div class="row row-cols-4">
+<div class="container-fluid">
 
-    {% if user.is_authenticated and user.is_active %}
+{% if user.is_authenticated and user.is_active %}
+<div class="row g-4">
+
+  {% for product in all_products|slice:":3" %}
+    <div>
+      <h3>{{product.0.brand_id}}</h3> 
+    </div>
+      {% for item in product %}
+      <div class="col-md-6 col-lg-3">
+        <div class="card bg-list">
+            <div class="card-body text-center">
+              <a href="{% url 'userproduct-details' id item.id %}" class="imgHover" title="This image is taken from www.amazon.in">
+                <img src="{{item.image.url}}" alt="" class="card-img-custom card-img-top w-50">
+              </a>
+                <h5 class="card-title mb-3">{{item.model}}</h5>
+                <p class="card-text">{{item.short_description}}</p>
+                <div class="d-md-flex align-items-center">
+                  <a href="#" type="button" class="btn btn-primary mx-3">Addto Cart</a>
+                  <h5>₹{{item.discount_price}}</h5>
+                </div>
+              </div>
+             
+        </div>
+    </div>
+    {% endfor %}
+  {% endfor %}
+</div>
+{% else %}
+
+<div class="row g-4">
+
+  {% for product in all_products|slice:":3" %}
+    <div>
+      <h5>{{product.0.brand_id}}</h5> 
+    </div>
+      {% for item in product %}
+      <div class="col-md-6 col-lg-3">
+        <div class="card bg-list">
+            <div class="card-body text-center">
+              <a href="{% url 'userproduct-details' 0 item.id %}" class="imgHover" title="This image is taken from www.amazon.in">
+                <img src="{{item.image.url}}" alt="" class="card-img-top w-50">
+              </a>
+                <h3 class="card-title mb-3">{{item.model}}</h3>
+                <p class="card-text">{{item.short_description}}</p>
+                <a href="">
+                    <i class="bi bi-twitter text-dark mx-1"></i>
+                    <i class="bi bi-facebook text-dark mx-1"></i>
+                    <i class="bi bi-linkedin text-dark mx-1"></i>
+                    <i class="bi bi-instagram text-dark mx-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+  {% endfor %}
+</div>
+{% endif %}
+</div>
+
+<!--  
+<div class="container-fluid mt-4 mx-2">
+  {% if user.is_authenticated and user.is_active %}
+  {% for product in all_products %}
+  <div class="container">
+    <h3>{{product.0.brand_id}}</h3>
+  </div>
+  <br>
+  <div class="row row-cols-4">
+      {% for i in product|slice:":3" %}
+      <div class="container">
+        <div class="card col mx-1" style="width: 18rem;">
+          <a href="{% url 'userproduct-details' id i.id %}">
+            <img src="{{i.image.url}}" class="card-img-top" style="width: 50%;" alt="...">
+          </a>
+            <div class="card-body">
+              <h5 class="card-title">{{i.model}}</h5>
+              <p class="card-text">{{i.short_description}}</p>
+              <a href="#" class="btn btn-primary mx-1">Addto Cart</a>
+              <a href="#" class="btn btn-primary mx-1">Buy now</a>
+            </div>
+          
+        </div>
+      </div>
+      
+      {% endfor %}
+      <br>
+      {% endfor %}
+    </div>
+    
+    {% else %}
+    {% for brand in brand_names|slice:"3" %}
     {% for product in products|slice:":4" %}
     <div class="card col mx-1" style="width: 18rem;">
       <a href="{% url 'userproduct-details' id product.id %}">
@@ -49,20 +140,7 @@ Home
       
     </div>
     {% endfor %}
-    {% else %}
-      {% for product in products|slice:":4" %}
-      <div class="card col mx-1" style="width: 18rem;">
-        <a href="{% url 'userproduct-details' 0 product.id %}">
-        <img src="{{product.image.url}}" class="card-img-top" alt="...">
-        </a>
-        <div class="card-body">
-          <h5 class="card-title">{{product.model}}</h5>
-          <p class="card-text">{{product.short_description}}</p>
-          <a href="#" class="btn btn-primary mx-1">Addto Cart</a>
-          <a href="#" class="btn btn-primary mx-1">Buy now</a>
-        </div>
-      </div>
-      {% endfor %}
+  {% endfor %}
     {% endif %}
 
   </div>
@@ -71,5 +149,6 @@ Home
 
 </div>
 </div>
+-->
 
 {% endblock %}
