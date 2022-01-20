@@ -42,7 +42,7 @@
         <div class="card bg-list">
             <div class="card-body text-center">
               <a href="{% url 'userproduct-details' 0 item.id %}">
-                <img src="{{item.image.url}}" alt="" class="card-img-custom card-img-top w-50">
+                <img src="{{item.image.url}}" alt="" class="card-img-custom card-img-top w-50" title="This image is taken from www.amazon.in">
               </a>
                 <h5 class="card-title mb-3">{{item.model}}</h5>
                 <p class="card-text">{{item.short_description}}</p>
