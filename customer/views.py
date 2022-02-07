@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.shortcuts import render
 from django.views import View
 from django.contrib import messages
 from django.shortcuts import render, redirect
@@ -8,6 +7,8 @@ from django.db.models import Q
 from customer.models import Product, Brand, Cart, Address
 from home.forms import UserCreate
 from . forms import CreateAddress
+from django.http import JsonResponse
+from django.utils import timezone
 
 # Create your views here.
 def index(request, **kwargs):
@@ -43,8 +44,6 @@ def search(request, **kwargs):
     query = request.GET['search']
     # products = Product.objects.all()
     # django icontains=> way to query on table
-    
-
     if len(query) > 80:
         products=Product.objects.none()
     else: 
@@ -145,7 +144,6 @@ def add_to_cart(request, **kwargs):
     product_id = kwargs['pid']
     product = Product.objects.get(id=product_id)
     # print("*************",product_id)
-    Cart
     context = {
         'id':kwargs['id'],
         'pid':kwargs['pid'],
@@ -179,7 +177,7 @@ def cart(request, **kwargs):
             context['amount']=amount
             return render(request, 'customer/cart.html',context)
         else:
-            return render(request, 'customer/cart.html',context)
+            return render(request, 'customer/empty_cart.html',context)
 
 def account(request, **kwargs):
     user = request.user
