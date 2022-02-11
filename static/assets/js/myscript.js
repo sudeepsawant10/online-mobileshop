@@ -13,7 +13,7 @@ $('.plus-cart').click(function() {
         },
         success: function(data) {
             console.log(data);
-            console.log("suceess");
+            console.log("PlusCart-> suceess");
             eml.innerText=data.quantity
             document.getElementById("amount").innerText = data.amount
             document.getElementById("total_amount").innerText = data.total_amount
@@ -36,11 +36,24 @@ $('.minus-cart').click(function() {
         },
         success: function(data) {
             console.log(data);
-            console.log("suceess");
+            console.log("MinusCart -> suceess");
             eml.innerText=data.quantity
-            document.getElementById("amount").innerText = data.amount
-            document.getElementById("total_amount").innerText = data.total_amount
+            quantity_value = data.quantity
+            if(quantity_value == 1){
+                console.log("one value...."+data.quantity)
+                // document.getElementById("fa-minus-square").disabled = true;
+                document.getElementById("amount").innerText = data.amount
+                document.getElementById("total_amount").innerText = data.total_amount
+            }  
+            else {
+                // document.getElementById("fa-minus-square").disabled = false;
+                document.getElementById("amount").innerText = data.amount
+                document.getElementById("total_amount").innerText = data.total_amount
+            } 
+            
 
+           
+             
         }
     })
 })

@@ -24,7 +24,11 @@
             </h4> 
             <br>
             {% if user.is_active %}
-            <a href="{% url 'add-to-cart' id product.id %}" class="btn btn-primary px-5 py-2">Add to Cart</a>
+                {% if prouduct_exist_in_cart %}
+                    <a href="{% url 'cart' id product.id %}" class="btn btn-primary px-5 py-2">Go to cart</a>
+                {% else %}
+                    <a href="{% url 'add-to-cart' id product.id %}" class="btn btn-primary px-5 py-2">Add to Cart</a>
+                {% endif %}
             {% else %}
             <a href="{% url 'login' %}" class="btn btn-primary px-5 py-2">Add to Cart</a>
             {% endif %}

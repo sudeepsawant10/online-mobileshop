@@ -121,12 +121,15 @@ def customSearch(request):
 def product_details(request, **kwargs):
     product = Product.objects.get(id=kwargs['pid'])
     user = request.user
-   
+    prouduct_exist_in_cart = False
+    # check in db
+    prouduct_exist_in_cart = Cart.objects.filter(Q(product=kwargs['pid']) & Q(user=kwargs['id'])).exists()
     if user.is_active:
         context = {
         'id':kwargs['id'],
         'pid':kwargs['pid'],
         'product':product,
+        'product_exist_in_cart':prouduct_exist_in_cart,
         }
         return render(request, "customer/product-details.html", context)
     else:
@@ -155,9 +158,6 @@ def cart(request, **kwargs):
     if request.user.is_authenticated:
         user = request.user
         cartItems = Cart.objects.filter(user=user)
-        amount = 0.0
-        shipping_amount=40.0
-        total_amount = 0.0
         cart_product = [p for p in Cart.objects.all() if p.user == user]
         print(cart_product)
         context = {
@@ -166,18 +166,31 @@ def cart(request, **kwargs):
            
         }
         if cart_product:
-            for p in cart_product:
-                tempamount = (p.quantity*p.product.discount_price)
-                amount+=tempamount
-                total_amount = amount + shipping_amount
-            print(tempamount)
-            print(amount)
-            print(total_amount)
-            context['total_amount']=total_amount
-            context['amount']=amount
+            context.update(price_detail(user))
+            print(context,'returned..')
             return render(request, 'customer/cart.html',context)
         else:
             return render(request, 'customer/empty_cart.html',context)
+
+def price_detail(user):
+    amount = 0.0
+    shipping_amount = 40.0
+    total_amount = 0.0
+    price_data={}
+    # take the all rows of cart for logged in user
+    cart_product = [p for p in Cart.objects.all() if p.user == user]
+    print('***********',cart_product)
+    # calculate amount according to quantity
+    # 
+    for p in cart_product:
+        temp_amount = (p.quantity * p.product.discount_price)
+        amount = amount + temp_amount
+        total_amount = amount + shipping_amount
+    price_data['total_amount'] = total_amount
+    price_data['amount'] = amount
+    # print(price_data)
+    return price_data
+
 
 def account(request, **kwargs):
     user = request.user
@@ -224,27 +237,26 @@ def plus_cart(request):
     if request.method == 'GET':
         prod_id = request.GET['prod_id']
         print(prod_id)
+        user=request.user
         c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
         c.quantity+=1
         c.save()
 
-        amount = 0.0
-        shipping_amount=40.0
-        total_amount = 0.0
-        cart_product = [p for p in Cart.objects.all() if p.user == request.user]
-        for p in cart_product:
-            tempamount = (p.quantity*p.product.discount_price)
-            amount+=tempamount
-
+        # amount = 0.0
+        # shipping_amount=40.0
+        # total_amount = 0.0
+        # cart_product = [p for p in Cart.objects.all() if p.user == request.user]
+        # for p in cart_product:
+        #     tempamount = (p.quantity*p.product.discount_price)
+        #     amount+=tempamount
         data = {
             'quantity':c.quantity,
-            'amount': amount,
-            'total_amount':amount + shipping_amount,
-
+            # 'amount': amount,
+            # 'total_amount':amount + shipping_amount,
         }
-        print(tempamount)
-        print(amount)
-        print(total_amount)
+        data.update(price_detail(user))
+      
+        # print(data,'Plus cart data')
         return JsonResponse(data)
 
 def minus_cart(request):
@@ -253,55 +265,31 @@ def minus_cart(request):
     if request.method == 'GET':
         prod_id = request.GET['prod_id']
         print(prod_id)
+        user = request.user
         c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
         c.quantity-=1
         # saving in db
         c.save()
 
-        amount = 0.0
-        shipping_amount=40.0
-        total_amount = 0.0
-        cart_product = [p for p in Cart.objects.all() if p.user == request.user]
-        for p in cart_product:
-            tempamount = (p.quantity*p.product.discount_price)
-            amount+=tempamount
-
         data = {
             'quantity':c.quantity,
-            'amount': amount,
-            'total_amount':amount + shipping_amount,
-
         }
-        print(tempamount)
-        print(amount)
-        print(total_amount)
+        data.update(price_detail(user))
+        # print(data,'MinusCart data...')
         return JsonResponse(data)
 
 def remove_cart(request):
     if request.method == 'GET':
         prod_id = request.GET['prod_id']
         print(prod_id)
+        user=request.user
         c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
         # c.quantity-=1
         # saving in db
         c.delete()
-
-        amount = 0.0
-        shipping_amount=40.0
-        total_amount = 0.0
-        cart_product = [p for p in Cart.objects.all() if p.user == request.user]
-        for p in cart_product:
-            tempamount = (p.quantity*p.product.discount_price)
-            amount+=tempamount
-
-        data = {
-            'amount': amount,
-            'total_amount':amount + shipping_amount,
-
-        }
-        print(tempamount)
-        print(amount)
-        print(total_amount)
+        data = {}
+        data.update(price_detail(user))
+        print(data)
         return JsonResponse(data)
 
 
