@@ -23,30 +23,31 @@
             {% endfor %}
             {% endif %}
             {% for order in orders %}
-            <div class="row shadow-sm-mb-3">
+            <div class="row shadow-sm-mb-3 my-3">
                 <div class="col-sm-2">
                     <img src="{{order.product_id.image.url}}" alt="product img" class="img-fluid" height="150"
                         width="150">
                 </div>
-            </div>
-
-            <div class="col-sm-7">
-                <p>Product: {{order.product_id.model}}</p>
-                <p>Quantity: {{order.quantity}}</p>
-                <p>Amount: ₹{{order.total_cost}}</p>
-            </div>
-
-            <div class="col-sm-3 fw-bold">
-                <p>Order Status: {{order.status}}</p>
-                {% if order.status == 'Delivered' %}
-                <div class="pogress">
-                    <div class="progress-bar" role="progressbar" style="height: 20%;" aria-valuemax="100"
-                        aria-valuemin="0" aria-valuenow="20"></div>
+                <div class="col-sm-7">
+                    <p>Product: {{order.product_id.model}}</p>
+                    <p>Quantity: {{order.quantity}}</p>
+                    <p>Amount: ₹{{order.total_cost}}</p>
                 </div>
-                {% endif %}
+    
+                <div class="col-sm-3 fw-bold">
+                    <p>Order Status: {{order.status}}</p>
+                    {% if order.status == 'Delivered' %}
+                    <div class="pogress">
+                        <div class="progress-bar" role="progressbar" style="height: 20%;" aria-valuemax="100"
+                            aria-valuemin="0" aria-valuenow="20"></div>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
+
             {% endfor %}
         </div>
     </div>
+
 </div>
 {% endblock content %}
