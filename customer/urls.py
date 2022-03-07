@@ -14,6 +14,12 @@ urlpatterns = [
     path('account/<int:id>/', views.account, name='account'),
     path('address/<int:id>/', views.add_address, name='address'),
     path('product-details/<int:id>/<int:pid>', views.product_details, name='userproduct-details'),
+    path('checkout/<int:id>/', views.checkout, name='checkout'),
+    path('do_payment/<int:id>/<int:addr_id>/', views.do_payment, name='do_payment'),
+    # path('pay/<int:id>/<int:id>', views.pay, name='pay'),
+    path('payment/<int:id>/', views.payment, name='payment'),
+    path('orders/<int:id>/', views.orders, name='orders'),
+
     
   
 ]+ static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

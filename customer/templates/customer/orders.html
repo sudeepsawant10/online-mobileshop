@@ -1,0 +1,52 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block title %}Orders{% endblock title %}
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <h3>Welcome {{user}}</h3>
+        <div class="col-sm-2 border-end">
+            <ul class="list-unstyled">
+                <li class="d-grid"><a href="{% url 'orders' id %}" class="btn btn-primary">Orders</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9 offset-sm-1">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-dismissible fade show {% if message.tags %}alert-{{ message.tags }}{% endif %} col-xl-12"
+                role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% for order in orders %}
+            <div class="row shadow-sm-mb-3">
+                <div class="col-sm-2">
+                    <img src="{{order.product_id.image.url}}" alt="product img" class="img-fluid" height="150"
+                        width="150">
+                </div>
+            </div>
+
+            <div class="col-sm-7">
+                <p>Product: {{order.product_id.model}}</p>
+                <p>Quantity: {{order.quantity}}</p>
+                <p>Amount: ₹{{order.total_cost}}</p>
+            </div>
+
+            <div class="col-sm-3 fw-bold">
+                <p>Order Status: {{order.status}}</p>
+                {% if order.status == 'Delivered' %}
+                <div class="pogress">
+                    <div class="progress-bar" role="progressbar" style="height: 20%;" aria-valuemax="100"
+                        aria-valuemin="0" aria-valuenow="20"></div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

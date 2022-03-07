@@ -7,7 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 # stor user in this model
 from home.models import User
 
-symbols = ['~','`','!','@','#','$','%','^','&','*','(',')','-','+','=','{','}','[',']','|','/',':',';','\"','\'','<','>',',','?']
+symbols = ['~','`','!','@','#','$','%','^','&','*','(',')','-','+','=','{','}','[',']','|','/','\\',':',';','\"','\'','<','>',',','?']
 numbers = ['0','1','2','3','4','5','6','7','8','9']
 
 #For registration of user
@@ -35,22 +35,27 @@ def check_contact(contact):
     if(len(contact) < 10):
         raise forms.ValidationError("Contact must be a 10 digit number")
 
+def check_name(name):
+    for num in numbers:
+        if num in name:
+            raise forms.ValidationError("Enter valid name")
+
     
 class UserCreate(UserCreationForm, forms.ModelForm, forms.Form):
     # Giving restriction to the some form attributes
     user_name = forms.CharField(validators=[check_username], error_messages={'required':'Username is required'}, required=True)
-    first_name = forms.CharField(error_messages={'required':'First Name is required'},
+    first_name = forms.CharField(validators=[check_name],
         max_length=30, help_text='Optional.')
-    last_name = forms.CharField(error_messages={'required':'Last Name is required'},
+    last_name = forms.CharField(validators=[check_name],
         max_length=30,  help_text='Optional.')  # necessary if required=True
     password1 = forms.CharField(validators=[check_password],error_messages={'required':'Password is required','min_length':'Password length must be greater than 8 character.',},
-        min_length=8, max_length=15, required=True, help_text='Optional.')  
+        min_length=8, max_length=15, required=True)  
     password2 = forms.CharField(validators=[check_password],error_messages={'required':'Please confirm your password',},
-        min_length=8, max_length=15, required=True, help_text='Optional.')  
+        min_length=8, max_length=15, required=True)  
     email = forms.EmailField(error_messages={'required':'Email is required'},
-        max_length=254, help_text='Required. Inform a valid email address.')
+        max_length=254)
     contact = forms.CharField(validators=[check_contact],error_messages={'required':'Contact is required', 'max_length':'Contact must be 10 digit number'},
-        max_length=10, help_text='Required.')
+        max_length=10)
 
     # structure
     class Meta:
@@ -61,12 +66,5 @@ class UserCreate(UserCreationForm, forms.ModelForm, forms.Form):
         fields = ('user_name', 'password1', 'password2',
                   'first_name', 'last_name', 'email', 'contact')
 
-    def clean(self):
-        cleaned_data = super(UserCreate, self).clean()
-        password = cleaned_data.get("password1")
-        confirm_password = cleaned_data.get("password2")
-
-        if password != confirm_password:
-            raise forms.ValidationError("password and confirm_password does not match")
-
+   
    

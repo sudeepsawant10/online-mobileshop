@@ -1,5 +1,6 @@
 from django.db import models
 from home.models import User
+import datetime
 
 # Create your models here.
 
@@ -13,7 +14,7 @@ class Address(models.Model):
     pin = models.IntegerField(blank=True,null=True)
 
     def __str__(self):
-        return str(self.flat_no)
+        return str(self.id)+" "+ self.user.first_name + " " + self.area +" " + str(self.pin)
 
 
 
@@ -22,7 +23,7 @@ class Payment(models.Model):
         ('COD', 'COD'),
         ('UPI', 'UPI'),
         ('Net Banking', 'Net Banking'),
-
+        ('Credit/Debit Card', 'Credit/Debit Card'),
     )
     id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -31,7 +32,7 @@ class Payment(models.Model):
     amount = models.IntegerField(default=5000)
 
     def __str__(self):
-        return "Payment Type = " + self.payment_type
+        return "Payment = " + self.user_id.email +" " +self.payment_type + " "+ str(self.amount)
         
 
 class Brand(models.Model):
@@ -70,7 +71,11 @@ class Cart(models.Model):
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return str(self.id)
+        return str(self.id) + " " + self.product.model + " " + str(self.quantity)
+
+    @property
+    def total_cost(self):
+        self.quantity * self.product.discount_price
 
 order_status = (
     ('Ordered', 'Ordered'),
@@ -82,13 +87,22 @@ class Order(models.Model):
     id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
-    payment_id = models.ForeignKey(Payment, on_delete=models.CASCADE)
+    payment_id = models.ForeignKey(Payment, on_delete=models.CASCADE, null=True)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True)
     quantity = models.IntegerField(default=1, blank=False, null=False)
-    date = models.DateField()
+    date = models.DateTimeField(default=datetime.datetime.now)
     total_amount = models.IntegerField()
     status = models.CharField(max_length=100, choices=order_status, default='ordered')
+
+    class Meta:
+        ordering = ['-date',]
+
     def __str__(self):
         return str(self.id)
+    
+    @property
+    def total_cost(self):
+        return self.quantity * self.product_id.discount_price
 
 
 class Review(models.Model):

@@ -52,7 +52,11 @@ Home
                 <h5 class="card-title mb-3">{{item.model}}</h5>
                 <p class="card-text">{{item.short_description}}</p>
                 <div class="d-md-flex align-items-center">
-                  <a href="#" type="button" class="btn btn-primary mx-3">Addto Cart</a>
+                  {% if user.is_active %}
+                  <a href="{% url 'add-to-cart' id item.id %}" type="button" class="btn btn-primary mx-3">Addto Cart</a>
+                  {% else %}
+                  <a href="{% url 'login' %}" type="button" class="btn btn-primary mx-3">Addto Cart</a>
+                  {% endif %}
                   <h5>₹{{item.discount_price}}</h5>
                 </div>
               </div>

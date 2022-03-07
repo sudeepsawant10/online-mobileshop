@@ -1,0 +1,102 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block title %}Profile{% endblock title %}
+{% block content %}
+<div class="container my-5">
+  <div class="row">
+    <h3>Welcome {{user}}</h3>
+
+    <h5>Total Amount: {{total_amount}}</h5>
+    <small>Term and Condition: Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, ullam saepe! Iure
+      optio repellat dolor velit, minus rem. Facilis cumque neque numquam laboriosam, accusantium adipisci nisi nihil
+      in et quis?</small>
+
+      <div class="col-md-8">
+        <div>
+          <h4 class="header-title">Payment Selection {{addr_id}}</h4>
+          <!-- Credit/Debit Card box-->
+          <div class="border p-3 mb-3 rounded">
+            <form action="{% url 'do_payment' id addr_id %}" method="post">
+              {% csrf_token %}
+               <!-- user_create is key we have passed thourgh views.py Register class through get -->
+                <!-- if fileds are not following our restirctions -->
+                
+                {% if payment_form.errors %}
+
+                {% for field in payment_form %}
+                <!-- if error ocuures that is invalid inputs -->
+                    {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                    {% endfor %}
+                {% endfor %}
+
+                {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+                {% endif %}
+              <div class="form-check">
+                <input type="radio" id="BillingOptRadio1" name="billingOptions" value="card-payment" class="form-check-input" >
+                <label class="form-check-label font-16 fw-bold" for="BillingOptRadio1">Credit / Debit Card</label>
+              </div>
+  
+              <div class="row mt-4">
+                <div class="col-md-12">
+                  <div class="mb-3">
+                    <label for="card-number" class="form-label">Card Number</label>
+                    <input type="text" id="card-number" class="form-control" name="card_number"
+                      value="{{payment_form.card_number.value|default:''}}" placeholder="Enter 16 digit card number">
+                  </div>
+                </div>
+              </div> <!-- end row -->
+              <div class="col-md-3">
+                <div class="mb-3">
+                  <label for="card-cvv" class="form-label">CVV code</label>
+                  <input type="text" id="card-cvv" class="form-control" name="cvv" placeholder="012">
+                </div>
+              </div>
+              
+                <input type="hidden" aid="{{addr_id}}" name="aid">
+                <div class="form-check">
+                  <button type="submit" class="btn btn-primary">Pay {{total_amount}} & Order</button>
+                </div>
+              </div> <!-- end row -->
+          </div>
+          <!-- end Credit/Debit Card box-->
+  
+          <!-- Cash on Delivery box-->
+          <div class="border p-3 mb-3 rounded">
+            <div class="form-check">
+              <input type="radio" id="BillingOptRadio4" name="billingOptions" value="cod-order" class="form-check-input">
+              <label class="form-check-label font-16 fw-bold" for="BillingOptRadio4">Cash on Delivery</label>
+            </div>
+            <p class="mb-0 ps-3 pt-1">Pay with cash when your order is delivered.</p>
+            <div class="form-check m-2">
+                  <button type="submit" class="btn btn-success">Order</button>
+            </div>
+          </div>
+  
+          <!-- end Cash on Delivery box-->
+          </div>
+        </form>
+  
+          <div class="row mt-4">
+            <div class="col-sm-6">
+              <a href="ecommerce-cart.html" class="btn btn-secondary">
+                <i class="mdi mdi-arrow-left"></i> Back to Shopping Cart </a>
+            </div> <!-- end col -->
+            
+          </div> <!-- end row-->
+  
+        </div>
+
+    {% endblock content %}
