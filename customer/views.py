@@ -11,43 +11,46 @@ from django.http import JsonResponse
 from django.utils import timezone
 
 # Create your views here.
+
+
 def index(request, **kwargs):
     products = Product.objects.all()
     brands = Brand.objects.all()
     brand_cat = Product.objects.values('brand_id', 'id')
-    brand_names=[]
-    all_products=[]
+    brand_names = []
+    all_products = []
 
     cat_list = {item['brand_id'] for item in brand_cat}
     print(cat_list)
     for cat in cat_list:
         prod = Product.objects.filter(brand_id=cat)
         all_products.append(prod[:4])
-    product_list=[]
+    product_list = []
 
-    
     for item in brands:
-    #     prod = Product.objects.filter(brand_id__name=item.name)
+        #     prod = Product.objects.filter(brand_id__name=item.name)
         brand_names.append(item.name)
     # print(all_products)
     # custome_search(request)
     context = {
-        'id':kwargs['id'],
-        'products':products,
-        'all_products':all_products,
+        'id': kwargs['id'],
+        'products': products,
+        'all_products': all_products,
         'brand_names': brand_names,
     }
     # print(context['products'])
     return render(request, 'customer/index.html', context)
+
 
 def search(request, **kwargs):
     query = request.GET['search']
     # products = Product.objects.all()
     # django icontains=> way to query on table
     if len(query) > 80:
-        products=Product.objects.none()
-    else: 
-        query_lookup = (Q(model__icontains=query) | Q(short_description__icontains=query))
+        products = Product.objects.none()
+    else:
+        query_lookup = (Q(model__icontains=query) | Q(
+            short_description__icontains=query))
         get_products = Product.objects.filter(query_lookup)
         # get_description = Product.objects.filter(short_description__icontains=query)
         get_brand = Product.objects.filter(brand_id__name__icontains=query)
@@ -55,23 +58,24 @@ def search(request, **kwargs):
         # products = products2.union(get_brand)
         print(products)
 
-
     if products.count == 0:
         messages.error("No search results found. Please refine your query")
-    
+
     context = {
-        'id':kwargs['id'],
-        'products':products,
-        'query':query,
+        'id': kwargs['id'],
+        'products': products,
+        'query': query,
     }
     return render(request, 'customer/search.html', context)
+
 
 def custome_search(request):
     query = request.GET.get('search')
     allprods = []
     allproducts = Product.objects.all()
-    brands={product.brand_id.name for product in allproducts}
-    products = [item for item in allproducts if query in item.model.lower() or query in item.short_description.lower() or query in item.brand_id.name ]
+    brands = {product.brand_id.name for product in allproducts}
+    products = [item for item in allproducts if query in item.model.lower(
+    ) or query in item.short_description.lower() or query in item.brand_id.name]
     # brandsof = [item['brand_id'].name for item in allproducts]
     # print(brandsof)
     # brand_products=Product.objects.values('brand_id','id')
@@ -91,12 +95,12 @@ def custome_search(request):
     # print(brands)
     context = {
         # 'products':allprods,
-        'query':query,
+        'query': query,
     }
     return render(request, 'customer/search.html', context)
 
 
-def searchMatch(query,item):
+def searchMatch(query, item):
     # print(query)
     print(item)
     if query.lower() in item.model.lower() or query in item.short_description.lower() or query in str(item.discount_price):
@@ -104,14 +108,15 @@ def searchMatch(query,item):
     else:
         return False
 
+
 def customSearch(request):
     products = Product.objects.all()
     brands = Brand.objects.all()
     cats = {item['name'] for item in brands}
     print("hellloooo")
     context = {
-        'id':kwargs['id'],
-        'products':products,
+        'id': kwargs['id'],
+        'products': products,
         'brands': brands,
     }
     # print(context['products'])
@@ -123,36 +128,38 @@ def product_details(request, **kwargs):
     user = request.user
     prouduct_exist_in_cart = False
     # check in db
-    prouduct_exist_in_cart = Cart.objects.filter(Q(product=kwargs['pid']) & Q(user=kwargs['id'])).exists()
+    prouduct_exist_in_cart = Cart.objects.filter(
+        Q(product=kwargs['pid']) & Q(user=kwargs['id'])).exists()
     if user.is_active:
         context = {
-        'id':kwargs['id'],
-        'pid':kwargs['pid'],
-        'product':product,
-        'product_exist_in_cart':prouduct_exist_in_cart,
+            'id': kwargs['id'],
+            'pid': kwargs['pid'],
+            'product': product,
+            'product_exist_in_cart': prouduct_exist_in_cart,
         }
         return render(request, "customer/product-details.html", context)
     else:
         context = {
-        'id':kwargs['id'],
-        'product':product,
+            'id': kwargs['id'],
+            'product': product,
         }
         return render(request, "customer/product-details.html", context)
 
 
 def add_to_cart(request, **kwargs):
     # we have to save data using prod_id
-    
+
     user = request.user
     product_id = kwargs['pid']
     product = Product.objects.get(id=product_id)
     # print("*************",product_id)
     context = {
-        'id':kwargs['id'],
-        'pid':kwargs['pid'],
+        'id': kwargs['id'],
+        'pid': kwargs['pid'],
     }
     Cart(user=user, product=product, item=1, quantity=1).save()
     return redirect('cart', id=kwargs['id'])
+
 
 def cart(request, **kwargs):
     if request.user.is_authenticated:
@@ -161,36 +168,37 @@ def cart(request, **kwargs):
         cart_product = [p for p in Cart.objects.all() if p.user == user]
         print(cart_product)
         context = {
-            'id':kwargs['id'],
-            'cartItems':cartItems,
-           
+            'id': kwargs['id'],
+            'cartItems': cartItems,
+
         }
         if cart_product:
             context.update(price_detail(user))
-            print(context,'returned..')
-            return render(request, 'customer/cart.html',context)
+            print(context, 'returned..')
+            return render(request, 'customer/cart.html', context)
         else:
-            return render(request, 'customer/empty_cart.html',context)
+            return render(request, 'customer/empty_cart.html', context)
+
 
 def price_detail(user):
     amount = 0.0
     delivery_charges = 40.0
     total_amount = 0.0
-    price_data={}
+    price_data = {}
     # take the all rows of cart for logged in user
     cart_product = [p for p in Cart.objects.all() if p.user == user]
-    print('***********',cart_product)
+    print('***********', cart_product)
     print(len(cart_product))
     # calculate amount according to quantity
-    # 
+    #
     for p in cart_product:
         temp_amount = (p.quantity * p.product.discount_price)
         amount = amount + temp_amount
     cart_list = list(cart_product)
     print(len(cart_list))
-    if amount < 50000 :
+    if amount < 50000:
         if len(cart_product) > 1:
-            delivery_charges=00.0
+            delivery_charges = 00.0
         total_amount = amount + delivery_charges
         price_data['delivery_charges'] = delivery_charges
     else:
@@ -207,12 +215,13 @@ def account(request, **kwargs):
     user = request.user
     address = Address.objects.filter(user=user)
     # user_create = UserCreate(instance=user)
-    context={
-        'id':kwargs['id'],
-        'address':address,
+    context = {
+        'id': kwargs['id'],
+        'address': address,
         # 'user_create':user_create,
     }
     return render(request, 'customer/account.html', context)
+
 
 def add_address(request, **kwargs):
     address_form = CreateAddress()
@@ -229,18 +238,17 @@ def add_address(request, **kwargs):
             print("Address added")
             return redirect('account', id=user.id)
         else:
-            context={
+            context = {
                 'id': kwargs['id'],
-                'address_form':address_form,
+                'address_form': address_form,
             }
-            return render(request, 'customer/address.html',context)
+            return render(request, 'customer/address.html', context)
     else:
-        context={
-                'id': kwargs['id'],
-                'address_form':address_form,
+        context = {
+            'id': kwargs['id'],
+            'address_form': address_form,
         }
-        return render(request, 'customer/address.html',context)
-
+        return render(request, 'customer/address.html', context)
 
 
 def plus_cart(request):
@@ -248,9 +256,9 @@ def plus_cart(request):
     if request.method == 'GET':
         prod_id = request.GET['prod_id']
         print(prod_id)
-        user=request.user
+        user = request.user
         c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
-        c.quantity+=1
+        c.quantity += 1
         c.save()
 
         # amount = 0.0
@@ -261,14 +269,15 @@ def plus_cart(request):
         #     tempamount = (p.quantity*p.product.discount_price)
         #     amount+=tempamount
         data = {
-            'quantity':c.quantity,
+            'quantity': c.quantity,
             # 'amount': amount,
             # 'total_amount':amount + shipping_amount,
         }
         data.update(price_detail(user))
-      
+
         # print(data,'Plus cart data')
         return JsonResponse(data)
+
 
 def minus_cart(request):
     print("minus clicked")
@@ -278,22 +287,23 @@ def minus_cart(request):
         print(prod_id)
         user = request.user
         c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
-        c.quantity-=1
+        c.quantity -= 1
         # saving in db
         c.save()
 
         data = {
-            'quantity':c.quantity,
+            'quantity': c.quantity,
         }
         data.update(price_detail(user))
         # print(data,'MinusCart data...')
         return JsonResponse(data)
 
+
 def remove_cart(request):
     if request.method == 'GET':
         prod_id = request.GET['prod_id']
         print(prod_id)
-        user=request.user
+        user = request.user
         c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
         # c.quantity-=1
         # saving in db
@@ -311,9 +321,9 @@ def checkout(request, **kwargs):
     addresses = Address.objects.filter(user=user)
     cart_product = [p for p in Cart.objects.all() if p.user == user]
 
-    context={
-        'id':kwargs['id'],
-        'addresses':addresses,
+    context = {
+        'id': kwargs['id'],
+        'addresses': addresses,
         # 'payment_form':payment_form,
     }
     payments = (
@@ -322,7 +332,7 @@ def checkout(request, **kwargs):
         ('Net Banking'),
         ('Credit/Debit Card'),
     )
-    
+
     if cart_product:
         context.update(price_detail(user))
 
@@ -344,11 +354,9 @@ def checkout(request, **kwargs):
     #         print("form is invalid")
     #         return redirect('checkout', id=user.id)
 
-    # else: 
+    # else:
     #     print("no called")
-    return render(request, 'customer/checkout.html',context)
-
-
+    return render(request, 'customer/checkout.html', context)
 
 
 """
@@ -374,42 +382,46 @@ def checkout(request, **kwargs):
     status = models.CharField(max_length=100, choices=order_status, default='ordered')
 
 """
+
+
 def payment(request, **kwargs):
     user = request.user
     custid = request.GET.get('custid')
     address = Address.objects.get(id=custid)
     payment_form = PaymentForm()
     cart = Cart.objects.filter(user=user)
-    context={
-        'id':kwargs['id'],
-        'addr_id':custid,
-        'payment_form':payment_form,
+    context = {
+        'id': kwargs['id'],
+        'addr_id': custid,
+        'payment_form': payment_form,
     }
     cart_product = [p for p in Cart.objects.all() if p.user == request.user]
     print("payment")
     if cart_product:
         context.update(price_detail(user))
-    return render(request,'customer/payment.html', context)
+    return render(request, 'customer/payment.html', context)
+
 
 def demo(request, **kwargs):
-    context={
-        'id':kwargs['id'],
-        'addr_id':kwargs['addr_id'],
+    context = {
+        'id': kwargs['id'],
+        'addr_id': kwargs['addr_id'],
     }
     print(context)
     return HttpResponse("demo")
+
 
 def do_payment(request, **kwargs):
     user = request.user
     payment_form = PaymentForm()
     custid = kwargs['addr_id']
-    print("***********************--------------*",custid)
+    print("***********************--------------*", custid)
 
     print("payment method called")
-    context={
-        'id':kwargs['id'],
-        'payment_form':payment_form,
-        'addr_id':kwargs['addr_id'],
+    context = {
+        'id': kwargs['id'],
+        'payment_form': payment_form,
+        'addr_id': kwargs['addr_id'],
     }
     context.update(price_detail(user))
     cart_items = Cart.objects.filter(user=user)
@@ -425,7 +437,7 @@ def do_payment(request, **kwargs):
         ('Net Banking'),
         ('Credit/Debit Card'),
     )
-   
+
     if request.method == 'POST':
         input_value = request.POST.get('billingOptions')
         if input_value == 'card-payment':
@@ -435,16 +447,18 @@ def do_payment(request, **kwargs):
                 print("valid")
                 payment_form = payment_form.save(commit=False)
                 payment_form.user_id = request.user
-                payment_form.payment_type=payments[3]
+                payment_form.payment_type = payments[3]
                 payment_form.amount = context['total_amount']
                 payment_form.save()
                 print("payment success")
                 for c in cart_items:
-                    Order(user_id=user,product_id=c.product, payment_id=payment_form, address=address, quantity=c.quantity,date=timezone.now(),total_amount=(c.quantity * c.product.discount_price)).save()
+                    Order(user_id=user, product_id=c.product, payment_id=payment_form, address=address,
+                          quantity=c.quantity, date=timezone.now(), total_amount=(c.quantity * c.product.discount_price)).save()
                     c.delete()
                     print("Placed order")
                 # return redirect('orders',id=user.id)
-                messages.success(request, 'Payment successfull and order placed')
+                messages.success(
+                    request, 'Payment successfull and order placed')
                 print("placed orders...")
                 return redirect('orders', id=user.id)
                 # return render(request, 'customer/orders.html', context)
@@ -458,7 +472,8 @@ def do_payment(request, **kwargs):
             pay.amount = context['total_amount']
             pay.save()
             for c in cart_items:
-                Order(user_id=user,product_id=c.product, payment_id=pay, address=address, quantity=c.quantity,date=timezone.now(),total_amount=context['total_amount']).save()
+                Order(user_id=user, product_id=c.product, payment_id=pay, address=address,
+                      quantity=c.quantity, date=timezone.now(), total_amount=context['total_amount']).save()
                 c.delete()
                 print("Placed order")
             messages.success(request, 'Order placed successfully.')
@@ -468,9 +483,9 @@ def do_payment(request, **kwargs):
         else:
             return HttpResponse("NO GET")
     else:
-        payment_form=PaymentForm()
-        context={
-            "payment_form":payment_form,
+        payment_form = PaymentForm()
+        context = {
+            "payment_form": payment_form,
         }
         return render(request, 'customer/payment.html', context)
 
@@ -482,7 +497,7 @@ def do_payment(request, **kwargs):
 #     cart_items = Cart.objects.filter(user=user)
 #     # addresses = Address.objects.filter(user=user)
 #     payment_form = PaymentForm()
-#     addr_id = request.GET.get('cust_addr_id') 
+#     addr_id = request.GET.get('cust_addr_id')
 #     # myaddress = Address.objects.get(id=addr_id)
 
 #     cart_product = [p for p in Cart.objects.all() if p.user == user]
@@ -497,7 +512,7 @@ def do_payment(request, **kwargs):
 #         ('Net Banking'),
 #         ('Credit/Debit Card'),
 #     )
-    
+
 #     if cart_product:
 #         context.update(price_detail(user))
 
@@ -529,11 +544,11 @@ def do_payment(request, **kwargs):
 #     #         # print("form is invalid")
 #     #     # return redirect('checkout', id=user.id)
 
-#     # else: 
+#     # else:
 #     #     print("no called")
 #     #     return render(request, 'customer/payment.html',context)
 #     return render(request, 'customer/payment.html', context)
-  
+
 # def pay(request, **kwargs):
 #     user = request.user
 #     payment_form = PaymentForm()
@@ -576,14 +591,12 @@ def do_payment(request, **kwargs):
 def orders(request, **kwargs):
     orders = Order.objects.filter(user_id=request.user)
     user = request.user
-    context={
-        'id':kwargs['id'],
-        'orders':orders,
+    context = {
+        'id': kwargs['id'],
+        'orders': orders,
     }
     if request.method == 'post':
         print("post call in orders")
         return render(request, 'customer/orders.html', context)
     else:
         return render(request, 'customer/orders.html', context)
-
-

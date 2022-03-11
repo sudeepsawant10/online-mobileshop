@@ -26,8 +26,8 @@
       <hr>
       <form action="{% url 'payment' id %}">
         {% for addr in addresses %}
-
-        <div class="card">
+ 
+        <div class="card"> 
           <div class="card-body">
             <h5>{{addr.user.first_name}} {{addr.user.last_name}}</h5>
             <p>{{addr.area}} {{addr.city}} {{addr.pin}}</p>

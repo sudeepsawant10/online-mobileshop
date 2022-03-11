@@ -67,7 +67,9 @@ def Login(request):
         user = authenticate(request, email=request.POST['inputEmail'], password= request.POST['inputPassword'])
         if user:
             login(request, user)
-            if user.is_active or user.is_staff:
+            if user.is_staff:
+                return redirect('userhome', id=user.id)
+            elif user.is_active:
                 return redirect('userhome', id=user.id)
             else:
                 messages.warning(request, "Invalid email or password")

@@ -2,14 +2,9 @@
 {% load static %}
 {% block title %}Orders{% endblock title %}
 {% block content %}
-<div class="container my-5">
+<div class="container-fluid my-5">
     <div class="row">
-        <h3>Welcome {{user}}</h3>
-        <div class="col-sm-2 border-end">
-            <ul class="list-unstyled">
-                <li class="d-grid"><a href="{% url 'orders' id %}" class="btn btn-primary">Orders</a></li>
-            </ul>
-        </div>
+        <h3>Total orders</h3>
         <div class="col-sm-9 offset-sm-1">
             {% if messages %}
             {% for message in messages %}
@@ -22,19 +17,32 @@
             </div>
             {% endfor %}
             {% endif %}
-            {% for order in orders %}
+            {% for order in total_orders %}
             <div class="row shadow-sm-mb-3 my-3">
-                <div class="col-sm-2">
+                <div class="col-sm-1">
                     <img src="{{order.product_id.image.url}}" alt="product img" class="img-fluid" height="150"
                         width="150">
                 </div>
-                <div class="col-sm-7">
+                <div class="col-sm-3">
                     <p>Product: {{order.product_id.model}}</p>
                     <p>Quantity: {{order.quantity}}</p>
                     <p>Amount: ₹{{order.total_cost}}</p>
                 </div>
+                <div class="col-sm-2">
+                    <div>User = {{order.user_id.first_name}} {{order.user_id.last_name}}</div>
+                    <i>{{order.date}}</i>
+                </div>
+                <div class="col-sm-1">
+                    <div>{{order.quantity}}</div>
+                </div>
+                <div class="col-sm-3">
+                    <div>{{order.address.flat_no}}, {{order.address.building}}, {{order.address.area}},
+                        {{order.address.city}} {{order.address.pin}}
+                    </div>
+                </div>
+               
     
-                <div class="col-sm-3 fw-bold">
+                <div class="col-sm-2 fw-bold">
                     <p>Status: {{order.status}}</p>
                     {% if order.status == 'Delivered' %}
                     <div class="pogress">

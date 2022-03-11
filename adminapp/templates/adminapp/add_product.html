@@ -1,0 +1,96 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block title %}Orders{% endblock title %}
+{% block content %}
+<div class="container-fluid my-5">
+  <div class="col-6 offset-sm-3" >
+      <h3>Add Mobile Product</h3>
+        <form action="{% url 'add_product' id %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% if product_form.errors %}
+
+                {% for field in product_form %}
+                <!-- if error ocuures that is invalid inputs -->
+                    {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                    {% endfor %}
+                {% endfor %}
+
+                {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+              <label for="inputAddress" class="form-label">Select Brand</label>
+            <select class="form-select" aria-label="Default select example" name="selectedBrand">
+              <option selected="selected" disabled>choose brand name</option>
+              {% for brand in brands %}
+                <option value="{{brand.id}}" >{{brand.name}}</option>
+              {% endfor %}
+            </select>
+                
+            <div class="col-12">
+              <label for="inputAddress" class="form-label">Model name</label>
+              <input type="text" class="form-control" id="inputAddress" name="model" >
+            </div>
+            <div class="col-12">
+              <label for="inputAddress2" class="form-label">Short Description of mobile</label>
+              <input type="text" class="form-control" id="inputAddress2" name="short_description" >
+            </div>
+            <div class="col-12">
+              <label for="inputCity" class="form-label">Camera</label>
+              <input type="text" class="form-control" id="inputCity" name="camera">
+            </div>
+            <div class="col-12">
+              <label for="inputCity" class="form-label">Display</label>
+              <input type="text" class="form-control" id="inputCity" name="display">
+            </div>
+            <div class="col-12">
+              <label for="inputCity" class="form-label">Memory</label>
+              <input type="text" class="form-control" id="inputCity" name="memory">
+            </div>
+            <div class="col-12">
+              <label for="inputCity" class="form-label">Processor</label>
+              <input type="text" class="form-control" id="inputCity" name="processor">
+            </div>
+            <div class="col-12">
+              <label for="inputCity" class="form-label">Operating System (Andorid/ios versions)</label>
+              <input type="text" class="form-control" id="inputCity" name="os">
+            </div>
+            <div class="col-12">
+              <label for="inputCity" class="form-label">Quantity Available</label>
+              <input type="number" class="form-control" id="inputCity" name="quantity" >
+            </div>
+            <div class="col-12">
+              <label for="inputCity" class="form-label">Selling Price</label>
+              <input type="number" class="form-control" id="inputCity" name="selling_price" >
+            </div>
+            <div class="col-12">
+              <label for="inputCity" class="form-label">Discount Price</label>
+              <input type="number" class="form-control" id="inputCity" name="discount_price" >
+            </div>
+
+            Select image to upload:
+            <input type="file" name="image" class="m-2" >
+            <div class="col-12 mt-3">
+                <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- 
+   
+            
+ -->
+{% endblock content %}

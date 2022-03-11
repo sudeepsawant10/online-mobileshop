@@ -1,0 +1,67 @@
+{% extends 'home/layout.html' %}
+{% load static %}
+{% block title %}
+Home
+{% endblock %}
+{% block script %}
+ 
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Admin page</h1>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-dismissible fade show {% if message.tags %}alert-{{ message.tags }}{% endif %} col-xl-12"
+        role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="row g-4 text-center ">
+        <div class="col-2 text-center">
+            <h5>Image </h5>
+        </div>
+        <div class="col-3 text-center">
+            <h5>Model</h5>
+        </div>
+        <div class="col-3 text-center">
+            <h5>Prices </h5>
+        </div>
+        <div class="col-3 text-center">
+            <h5>Brand </h5>
+        </div>
+
+        {% for product in products %}
+        <div class="col-2">
+            <img src="{{product.image.url}}" style="height: 80px; width: auto;" alt="" class="card-img-custom card-img-top rounded float-start " title="This image is taken from www.amazon.in">
+        </div>
+        <div class="col-3">
+            <div>{{product.model}}</div>
+            <div>{{product.short_description}}</div>
+        </div>
+        <div class="col-3">
+            <div>Discount price = {{product.discount_price}}</div>
+            <div>Selling price = {{product.selling_price}}</div>
+        </div>
+        <div class="col-3">
+            {{product.brand_id.name}}
+        </div>
+        <div style="height:4px; background-color: rgb(59, 55, 50,0.2);">
+        </div>
+
+        {% endfor %}
+    </div>
+
+    <div class="row">
+       
+    </div>
+    
+    
+    
+</div>
+{% endblock %}
