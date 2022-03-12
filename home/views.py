@@ -68,7 +68,7 @@ def Login(request):
         if user:
             login(request, user)
             if user.is_staff:
-                return redirect('userhome', id=user.id)
+                return redirect('products', id=user.id)
             elif user.is_active:
                 return redirect('userhome', id=user.id)
             else:
