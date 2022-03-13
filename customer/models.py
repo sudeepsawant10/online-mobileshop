@@ -44,7 +44,7 @@ class Brand(models.Model):
         
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
-    brand_id = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True)
+    brand_id = models.ForeignKey(Brand, on_delete=models.CASCADE, null=False)
     model = models.CharField(max_length=255, blank=True, null=True)
     short_description = models.CharField(max_length=255, blank=False, null=True)
     camera = models.CharField(max_length=255, blank=True, null=True)
@@ -79,7 +79,7 @@ class Cart(models.Model):
 
 order_status = (
     ('Ordered', 'Ordered'),
-    ('Pending', 'Pending'),
+    ('Shipped', 'Shipped'),
     ('Delivered', 'Delivered'),
     ('Cancelled', 'Cancelled'),
 )
@@ -107,6 +107,7 @@ class Order(models.Model):
 
 class Review(models.Model):
     id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     title = models.CharField(max_length=100, blank=True, null=True)

@@ -4,9 +4,9 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db.models import Q
-from customer.models import Product, Brand, Cart, Address, Order, Payment
+from customer.models import Product, Brand, Cart, Address, Order, Payment, Review
 from home.forms import UserCreate
-from . forms import CreateAddress, PaymentForm
+from . forms import CreateAddress, PaymentForm, AddReview
 from django.http import JsonResponse
 from django.utils import timezone
 
@@ -125,25 +125,64 @@ def customSearch(request):
 
 def product_details(request, **kwargs):
     product = Product.objects.get(id=kwargs['pid'])
+    product_match_for_review = False
+    order_for_review = 0
+    reviews = Review.objects.filter(product=product)
+    # print(reviews)
+    add_review = AddReview()
+    print(product.id)
+    pid = product.id
     user = request.user
-    prouduct_exist_in_cart = False
-    # check in db
-    prouduct_exist_in_cart = Cart.objects.filter(
-        Q(product=kwargs['pid']) & Q(user=kwargs['id'])).exists()
     if user.is_active:
+        myorders = Order.objects.filter(Q(user_id=user) & Q(status='Delivered')).values('id','product_id')
+        print("my orders = ", end=" ")
+        print(myorders)
+        for mo in myorders:
+            if pid == mo['product_id']:
+                print("product matched for review")
+                product_match_for_review = True
+                order_for_review = mo['id']
+        prouduct_exist_in_cart = False
+        print(product_match_for_review)
+        print(order_for_review)
+        # check in db
+        prouduct_exist_in_cart = Cart.objects.filter(Q(product=kwargs['pid']) & Q(user=kwargs['id'])).exists()
         context = {
             'id': kwargs['id'],
             'pid': kwargs['pid'],
             'product': product,
+            'product_match_for_review':product_match_for_review,
             'product_exist_in_cart': prouduct_exist_in_cart,
+            'add_review':add_review,
+            'reviews':reviews
         }
-        return render(request, "customer/product-details.html", context)
+        if request.method == 'POST':
+            print("post called")
+            add_review = AddReview(request.POST)
+            if add_review.is_valid():
+                print("valid form review")
+                add_review = add_review.save(commit=False)
+                order_instance = Order.objects.get(pk=order_for_review)
+                add_review.user = order_instance.user_id
+                add_review.order = order_instance
+                add_review.product = order_instance.product_id
+                add_review.save()
+                messages.success(request, 'Review added successfully')
+                return render(request, "customer/product-details.html", context)
+            else:
+                add_review = AddReview()
+                print("Invalid form")
+                return render(request, "customer/product-details.html", context)
+        else:
+            return render(request, "customer/product-details.html", context)
     else:
         context = {
             'id': kwargs['id'],
             'product': product,
+            'reviews':reviews,
         }
         return render(request, "customer/product-details.html", context)
+    
 
 
 def add_to_cart(request, **kwargs):
@@ -336,26 +375,6 @@ def checkout(request, **kwargs):
     if cart_product:
         context.update(price_detail(user))
 
-    # if request.method == 'POST':
-    #     print("post called")
-    #     payment_form = PaymentForm(request.POST)
-    #     print("post called....")
-    #     if payment_form.is_valid():
-    #         print("form is valid")
-    #         # print(context['total_amount'])
-    #         payment_form = payment_form.save(commit=False)
-    #         payment_form.user_id = request.user
-    #         payment_form.payment_type=payments[3]
-    #         payment_form.amount = context['total_amount']
-    #         payment_form.save()
-    #         messages.success(request, 'Account created successfully.')
-    #         return redirect('checkout', id=user.id)
-    #     else:
-    #         print("form is invalid")
-    #         return redirect('checkout', id=user.id)
-
-    # else:
-    #     print("no called")
     return render(request, 'customer/checkout.html', context)
 
 
@@ -387,14 +406,19 @@ def checkout(request, **kwargs):
 def payment(request, **kwargs):
     user = request.user
     custid = request.GET.get('custid')
-    address = Address.objects.get(id=custid)
     payment_form = PaymentForm()
-    cart = Cart.objects.filter(user=user)
     context = {
         'id': kwargs['id'],
         'addr_id': custid,
         'payment_form': payment_form,
     }
+    try:
+        address = Address.objects.get(id=custid)
+    except Exception(TypeError) as e:
+        messages.info(request, 'Please check your account and add address')
+        return render(request, 'customer/payment.html', context)
+    cart = Cart.objects.filter(user=user)
+    context['addr_id']=custid
     cart_product = [p for p in Cart.objects.all() if p.user == request.user]
     print("payment")
     if cart_product:
@@ -597,6 +621,25 @@ def orders(request, **kwargs):
     }
     if request.method == 'post':
         print("post call in orders")
+        return render(request, 'customer/orders.html', context)
+    else:
+        return render(request, 'customer/orders.html', context)
+
+def cancel_order(request, **kwargs):
+    orders = Order.objects.filter(user_id=request.user)
+    context = {
+        'id':kwargs['id'],
+        'orders':orders
+    }
+    if request.method == 'POST':
+        orderid = request.POST.get('orderid')
+        print(orderid)
+        status = 'Cancelled'
+        order_instance = Order.objects.get(pk=orderid)
+        order_instance.status = status
+        order_instance.save()
+        print("order cancelled")
+        messages.info(request, "Order cancelled successfully")
         return render(request, 'customer/orders.html', context)
     else:
         return render(request, 'customer/orders.html', context)

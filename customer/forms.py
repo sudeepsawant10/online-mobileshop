@@ -1,5 +1,5 @@
 from django import forms
-from . models import Address, Payment
+from . models import Address, Payment, Review
 
 numbers = ['0','1','2','3','4','5','6','7','8','9']
 
@@ -37,3 +37,14 @@ class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
         fields = ['card_number']
+
+class AddReview(forms.ModelForm):
+    # id = models.AutoField(primary_key=True)
+    # order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    # product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    title = forms.CharField(max_length=100, required=True)
+    description = forms.CharField(max_length=100, required=True)
+    stars = forms.IntegerField(required=True)
+    class Meta:
+        model = Review
+        fields = ['title', 'description', 'stars']

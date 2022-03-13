@@ -19,6 +19,7 @@ urlpatterns = [
     # path('pay/<int:id>/<int:id>', views.pay, name='pay'),
     path('payment/<int:id>/', views.payment, name='payment'),
     path('orders/<int:id>/', views.orders, name='orders'),
+    path('cancel_order/<int:id>/', views.cancel_order, name='cancel-order'),
 
     
   

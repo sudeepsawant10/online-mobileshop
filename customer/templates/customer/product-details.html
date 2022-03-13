@@ -42,6 +42,66 @@
 
         </div>
     </div>
-    
+</div>
+<div >
+    <div class="row">
+        {% if product_match_for_review %}
+        <div class="col-8 m-4">
+            <h3>Add your review about product and our service</h3>
+            <form action="{% url 'userproduct-details' id pid %}" method="post" class="">
+                {% csrf_token %}
+                <!-- <span class="login100-form-title">
+                </span> -->
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-dismissible fade show {% if message.tags %}alert-{{ message.tags }}{% endif %} col-xl-12"
+                    role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                
+                <div class="mb-3">
+                    <label class="form-label">title</label>
+                    <input type="text" class="form-control" id="exampleInputEmail1" name="title"
+                     aria-describedby="emailHelp">
+                </div>
+               
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <input type="text" class="form-control" name="description">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Stars</label>
+                    <input type="number" class="form-control" min="1" max="5" placeholder="5" name="stars">
+                </div>
+        
+                <button type="submit" class="btn btn-primary">Submit</button>
+        
+            </form>
+        </div>
+    {% endif %}
+
+    <div class="col-8">
+        <h3 class="m-3">Reviews : </h3>
+        {% for review in reviews %}
+        <div class="card m-3">
+            <div class="card-body">
+              <h5 class="card-title">{{review.title}}</h5>
+              <p class="card-text">{{review.description}}</p>
+              <a href="#" class="card-link">{{review.stars}} Stars</a>
+              <i>By {{review.user.first_name}} {{review.user.last_name}}</i> 
+            </div>
+          </div>
+        {% empty %}  
+          <h6 class="m-3 text-center">No Reviews!</h6>
+        {% endfor %}
+    </div>
+    </div>
+        
 </div>
 {% endblock %}

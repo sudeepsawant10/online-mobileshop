@@ -86,3 +86,7 @@ function valueChange() {
     alert("credit selected");
   }
 }
+
+$('.cancel-order').click(function(){
+    confirm("Ary you sure to cancel order?")
+});

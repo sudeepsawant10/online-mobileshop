@@ -7,5 +7,6 @@ urlpatterns = [
     path('products/<int:id>/', views.products, name='products'),
     path('total_orders/<int:id>/', views.orders, name='total_orders'),
     path('add_product/<int:id>/', views.add_product, name='add_product'),
+    path('update_order/<int:id>/', views.update_status, name='update-order'),
     
 ]+ static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

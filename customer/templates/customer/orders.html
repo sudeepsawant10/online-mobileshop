@@ -36,12 +36,19 @@
     
                 <div class="col-sm-3 fw-bold">
                     <p>Status: {{order.status}}</p>
-                    {% if order.status == 'Delivered' %}
-                    <div class="pogress">
-                        <div class="progress-bar" role="progressbar" style="height: 20%;" aria-valuemax="100"
-                            aria-valuemin="0" aria-valuenow="20"></div>
-                    </div>
-                    {% endif %}
+                    <form action="{% url 'cancel-order' id %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="orderid" value="{{order.id}}">
+                        {% if order.status == 'Cancelled' %}
+                        <div class="pogress">
+                            <div class="progress-bar" role="progressbar" style="height: 20%;" aria-valuemax="100"
+                                aria-valuemin="0" aria-valuenow="20"></div>
+                                <p class="btn-danger p-1">You cancelled this order!</p>
+                        </div>  
+                        {% else %}
+                        <button type="submit" class="btn btn-dark cancel-order">Cancel order</button>
+                        {% endif %}
+                    </form>
                 </div>
             </div>
 

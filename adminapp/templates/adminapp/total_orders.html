@@ -23,7 +23,7 @@
                     <img src="{{order.product_id.image.url}}" alt="product img" class="img-fluid" height="150"
                         width="150">
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     <p>Product: {{order.product_id.model}}</p>
                     <p>Quantity: {{order.quantity}}</p>
                     <p>Amount: ₹{{order.total_cost}}</p>
@@ -42,14 +42,29 @@
                 </div>
                
     
-                <div class="col-sm-2 fw-bold">
+                <div class="col-sm-3 fw-bold">
                     <p>Status: {{order.status}}</p>
-                    {% if order.status == 'Delivered' %}
-                    <div class="pogress">
-                        <div class="progress-bar" role="progressbar" style="height: 20%;" aria-valuemax="100"
-                            aria-valuemin="0" aria-valuenow="20"></div>
-                    </div>
-                    {% endif %}
+                    <form action="{% url 'update-order' id %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{order.id}}" name="orderid">
+                        <select class="form-select" aria-label="Default select example" name="orderStatus" id="">
+                            <option value="" selected="selected" disabled>{{order.status}}</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                        {% if order.status == 'Cancelled' %}
+                        <div class="pogress">
+                            <div class="progress-bar" role="progressbar" style="height: 20%;" aria-valuemax="100"
+                                aria-valuemin="0" aria-valuenow="20"></div>
+                                <p class="btn-danger p-1 m-1">Order is cancelled by user</p>
+                        </div>  
+                        {% else %}
+                            <button type="submit" class="btn btn-primary my-2">Update Status</button>
+
+                        {% endif %}
+                    </form>
+                    
                 </div>
             </div>
 
