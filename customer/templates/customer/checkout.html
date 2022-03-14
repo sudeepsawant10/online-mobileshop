@@ -22,6 +22,17 @@
         in et quis?</small>
     </div>
     <div class="col-sm-4 offset-sm-1">
+          {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-dismissible fade show {% if message.tags %}alert-{{ message.tags }}{% endif %} col-xl-12"
+              role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+              {{ message }}
+          </div>
+          {% endfor %}
+          {% endif %}
       <h4>Select Shipping Address</h4>
       <hr>
       <form action="{% url 'payment' id %}">

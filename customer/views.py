@@ -414,9 +414,11 @@ def payment(request, **kwargs):
     }
     try:
         address = Address.objects.get(id=custid)
-    except Exception(TypeError) as e:
+    except (BaseException )as e:
+        print("exception in")
+        context['addr_id'] = 0
         messages.info(request, 'Please check your account and add address')
-        return render(request, 'customer/payment.html', context)
+        return render(request, 'customer/checkout.html', context)
     cart = Cart.objects.filter(user=user)
     context['addr_id']=custid
     cart_product = [p for p in Cart.objects.all() if p.user == request.user]
@@ -449,7 +451,10 @@ def do_payment(request, **kwargs):
     }
     context.update(price_detail(user))
     cart_items = Cart.objects.filter(user=user)
-    address = Address.objects.get(id=custid)
+    try:
+        address = Address.objects.get(id=custid)
+    except Exception as e:
+        return redirect('checkout', id=user.id)
     cart_product = [p for p in Cart.objects.all() if p.user == request.user]
     print("payment_done")
     if cart_product:
