@@ -60,7 +60,6 @@ class Product(models.Model):
     def __str__(self):
         return str(self.id)+" "+self.model
 
-
  
 
 class Cart(models.Model):
@@ -111,7 +110,7 @@ class Review(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     title = models.CharField(max_length=100, blank=True, null=True)
-    description = models.CharField(max_length=100, blank=True, null=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
     stars = models.IntegerField(blank=True, null=True)
 
     def __str__(self):

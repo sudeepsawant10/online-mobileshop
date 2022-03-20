@@ -1,14 +1,14 @@
 {% extends 'home/layout.html' %}
 
 {% block title %}
-Register
+    Register
 {% endblock %}
 
 {% block content %}
 
 
-<div class="col-6 m-4">
-
+<div class="col-6 m-4 container">
+    <h1>Login</h1>
     <form action="{% url 'login' %}" method="POST" class="">
         {% csrf_token %}
         <!-- <span class="login100-form-title">
@@ -32,13 +32,13 @@ Register
        
         <div class="mb-3">
             <label class="form-label">Password</label>
-            <input type="password" class="form-control" name="inputPassword">
+            <input type="password" class="form-control" name="inputPassword" minlength="8" maxlength="15">
         </div>
 
         <button type="submit" class="btn btn-primary">Login</button>
 
         <div>
-            <a href="" class="text-center">Don't have account?</a>
+            <a href="{% url 'register' %}" class="text-center">Don't have account?</a>
         </div>
 
     </form>

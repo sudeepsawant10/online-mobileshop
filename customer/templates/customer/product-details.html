@@ -91,9 +91,10 @@
         {% for review in reviews %}
         <div class="card m-3">
             <div class="card-body">
-              <h5 class="card-title">{{review.title}}</h5>
+              <h5 class="card-title">
+                <i class="bi bi-star-fill m-2"></i>{{review.stars}} | {{review.title}}</h5>
               <p class="card-text">{{review.description}}</p>
-              <a href="#" class="card-link">{{review.stars}} Stars</a>
+              <!-- <div class="m-1"><i class="bi bi-star m-1"></i> {{review.stars}}</div> -->
               <i>By {{review.user.first_name}} {{review.user.last_name}}</i> 
             </div>
           </div>

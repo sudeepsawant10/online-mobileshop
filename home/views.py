@@ -24,7 +24,6 @@ def index(request):
         prod = Product.objects.filter(brand_id=cat)
         all_products.append(prod[:4])
     product_list=[]
-
     
     for item in brands:
     #     prod = Product.objects.filter(brand_id__name=item.name)
@@ -68,7 +67,7 @@ def Login(request):
         if user:
             login(request, user)
             if user.is_staff:
-                return redirect('products', id=user.id)
+                return redirect('total_orders', id=user.id)
             elif user.is_active:
                 return redirect('userhome', id=user.id)
             else:

@@ -145,6 +145,7 @@ def product_details(request, **kwargs):
         prouduct_exist_in_cart = False
         print(product_match_for_review)
         print(order_for_review)
+
         # check in db
         prouduct_exist_in_cart = Cart.objects.filter(Q(product=kwargs['pid']) & Q(user=kwargs['id'])).exists()
         context = {
@@ -233,6 +234,7 @@ def price_detail(user):
     for p in cart_product:
         temp_amount = (p.quantity * p.product.discount_price)
         amount = amount + temp_amount
+
     cart_list = list(cart_product)
     print(len(cart_list))
     if amount < 50000:
@@ -378,31 +380,6 @@ def checkout(request, **kwargs):
     return render(request, 'customer/checkout.html', context)
 
 
-"""
-    payments = (
-        ('COD', 'COD'),
-        ('UPI', 'UPI'),
-        ('Net Banking', 'Net Banking'),
-
-    )
-    id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    payment_type = models.CharField(max_length=100, choices=payments)
-    card_number = models.CharField(max_length=100, blank=True, null=True)
-    amount = models.IntegerField(default=5000)
-
-    id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
-    payment_id = models.ForeignKey(Payment, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1, blank=False, null=False)
-    date = models.DateField()
-    total_amount = models.IntegerField()
-    status = models.CharField(max_length=100, choices=order_status, default='ordered')
-
-"""
-
-
 def payment(request, **kwargs):
     user = request.user
     custid = request.GET.get('custid')
@@ -480,12 +457,18 @@ def do_payment(request, **kwargs):
                 payment_form.amount = context['total_amount']
                 payment_form.save()
                 print("payment success")
-                for c in cart_items:
-                    Order(user_id=user, product_id=c.product, payment_id=payment_form, address=address,
-                          quantity=c.quantity, date=timezone.now(), total_amount=(c.quantity * c.product.discount_price)).save()
-                    c.delete()
-                    print("Placed order")
-                # return redirect('orders',id=user.id)
+                if len(cart_items) > 1:
+                    for c in cart_items:
+                        Order(user_id=user, product_id=c.product, payment_id=payment_form, address=address,
+                            quantity=c.quantity, date=timezone.now(), total_amount=(c.quantity * c.product.discount_price)).save()
+                        c.delete()
+                        print("Placed order")
+                else:
+                    for c in cart_items:
+                        Order(user_id=user, product_id=c.product, payment_id=payment_form, address=address,
+                            quantity=c.quantity, date=timezone.now(), total_amount=context['total_amount']).save()
+                        c.delete()
+                        print("Placed order")
                 messages.success(
                     request, 'Payment successfull and order placed')
                 print("placed orders...")
@@ -500,11 +483,27 @@ def do_payment(request, **kwargs):
             pay.payment_type = payments[0]
             pay.amount = context['total_amount']
             pay.save()
-            for c in cart_items:
-                Order(user_id=user, product_id=c.product, payment_id=pay, address=address,
-                      quantity=c.quantity, date=timezone.now(), total_amount=context['total_amount']).save()
-                c.delete()
-                print("Placed order")
+            
+            if len(cart_items) > 1:
+                for c in cart_items:
+                    total_amount = c.quantity * c.product.discount_price
+                    print(total_amount)
+                    if total_amount <50000:
+                        total_amount= total_amount + 40
+                    Order(user_id=user, product_id=c.product, payment_id=pay, address=address,
+                        quantity=c.quantity, date=timezone.now(), total_amount=(c.quantity * c.product.discount_price)).save()
+                    c.delete()
+                    print("Placed order")
+            else:
+                for c in cart_items:
+                    total_amount = c.quantity * c.product.discount_price
+                    print(total_amount)
+                    if total_amount <50000:
+                        total_amount= total_amount + 40
+                    Order(user_id=user, product_id=c.product, payment_id=pay, address=address,
+                        quantity=c.quantity, date=timezone.now(), total_amount=context['total_amount']).save()
+                    c.delete()
+                    print("Placed order")
             messages.success(request, 'Order placed successfully.')
             print("placed orders...")
             return redirect('orders', id=user.id)
@@ -517,104 +516,6 @@ def do_payment(request, **kwargs):
             "payment_form": payment_form,
         }
         return render(request, 'customer/payment.html', context)
-
-
-# def payment(request, **kwargs):
-
-#     user = request.user
-#     payment_form = PaymentForm()
-#     cart_items = Cart.objects.filter(user=user)
-#     # addresses = Address.objects.filter(user=user)
-#     payment_form = PaymentForm()
-#     addr_id = request.GET.get('cust_addr_id')
-#     # myaddress = Address.objects.get(id=addr_id)
-
-#     cart_product = [p for p in Cart.objects.all() if p.user == user]
-
-#     context={
-#         'id':kwargs['id'],
-#         'payment_form':payment_form,
-#     }
-#     payments = (
-#         ('COD'),
-#         ('UPI'),
-#         ('Net Banking'),
-#         ('Credit/Debit Card'),
-#     )
-
-#     if cart_product:
-#         context.update(price_detail(user))
-
-#     total_amount = context['amount']
-#     context['addr_id']=addr_id
-
-#     # if request.method == 'POST':
-#     #     # print("post called")
-#     #     # payment_form = PaymentForm(request.POST)
-#     #     # print("post called....")
-#     #     # if payment_form.is_valid():
-#     #     #     print("form is valid")
-#     #     #     # print(context['total_amount'])
-#     #     #     payment_form = payment_form.save(commit=False)
-#     #     #     payment_form.user_id = request.user
-#     #     #     payment_form.payment_type=payments[3]
-#     #     #     payment_form.amount = context['total_amount']
-#     #     #     payment_form.save()
-#     #     #     for c in cart_items:
-#     #     #         Order(user_id=user,product_id=c.product, payment_id=payment_form, address=addr_id, quantity=c.quantity,date=timezone.now(),total_amount=(c.quantity * c.product.discount_price)).save()
-#     #     #         c.delete()
-#     #     #         print("Placed order")
-#     #     #     # return redirect('orders',id=user.id)
-#     #     #     # messages.success(request, 'Payment successfull and order placed')
-#     #     #     print("Reached here")
-#     #     #     return render(request, 'customer/orders.html', context)
-#     #     pay(request,context)
-#     #     # else:
-#     #         # print("form is invalid")
-#     #     # return redirect('checkout', id=user.id)
-
-#     # else:
-#     #     print("no called")
-#     #     return render(request, 'customer/payment.html',context)
-#     return render(request, 'customer/payment.html', context)
-
-# def pay(request, **kwargs):
-#     user = request.user
-#     payment_form = PaymentForm()
-#     print(kwargs)
-#     aid=kwargs['addr_id']
-#     print(aid)
-#     context={
-#         'id':kwargs['id'],
-#         'payment_form':payment_form,
-#     }
-#     context.update(price_detail(user))
-#     if request.method == 'POST':
-#         print("post call in pay()")
-#         payment_form = PaymentForm(request.POST)
-#         # print("post called....")
-#         # if payment_form.is_valid():
-#         #     print("form is valid")
-#         #     # print(context['total_amount'])
-#         #     payment_form = payment_form.save(commit=False)
-#         #     payment_form.user_id = request.user
-#         #     payment_form.payment_type=payments[3]
-#         #     payment_form.amount = context['total_amount']
-#         #     payment_form.save()
-#         #     for c in cart_items:
-#         #         Order(user_id=user,product_id=c.product, payment_id=payment_form, address=myaddress, quantity=c.quantity,date=timezone.now(),total_amount=(c.quantity * c.product.discount_price)).save()
-#         #         c.delete()
-#         #         print("Placed order")
-#         #     # return redirect('orders',id=user.id)
-#         #     # messages.success(request, 'Payment successfull and order placed')
-#         #     print("Reached here")
-#         #     return render(request, 'customer/payment.html', context)
-#         # else:
-#         #     print("form is invalid")
-#         #     return redirect('pay', id=user.id)
-#     else:
-#         print("no post call pay()")
-#         return render(request, 'customer/payment.html', context)
 
 
 def orders(request, **kwargs):

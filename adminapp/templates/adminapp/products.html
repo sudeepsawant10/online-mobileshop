@@ -8,8 +8,7 @@ Home
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>Admin page</h1>
+<div class="container my-3">
     {% if messages %}
     {% for message in messages %}
     <div class="alert alert-dismissible fade show {% if message.tags %}alert-{{ message.tags }}{% endif %} col-xl-12"
@@ -35,6 +34,7 @@ Home
         <div class="col-3 text-center">
             <h5>Brand </h5>
         </div>
+        <div class="orders-divider"></div>
 
         {% for product in products %}
         <div class="col-2">

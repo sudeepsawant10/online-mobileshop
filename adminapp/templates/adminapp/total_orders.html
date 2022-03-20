@@ -3,9 +3,10 @@
 {% block title %}Orders{% endblock title %}
 {% block content %}
 <div class="container-fluid my-5">
+    <center><h1>Welcome {{user}}</h1></center>
     <div class="row">
         <h3>Total orders</h3>
-        <div class="col-sm-9 offset-sm-1">
+        <div class="col-sm-10 offset-sm-1">
             {% if messages %}
             {% for message in messages %}
             <div class="alert alert-dismissible fade show {% if message.tags %}alert-{{ message.tags }}{% endif %} col-xl-12"
@@ -17,6 +18,34 @@
             </div>
             {% endfor %}
             {% endif %}
+
+            <div class="row shadow-sm-mb-3 my-2 ">
+            <div class="col-sm-1 text-center" >
+                <h6>Product Image</h6>
+            </div>
+            <div class="col-sm-2 text-center" >
+                <h6>Product Detail</h6>
+            </div>
+            <div class="col-sm-2 text-center">
+                <h6>Customer</h6>
+            </div>
+            <div class="col-sm-1 text-center">
+                <h6>Quantity</h6>
+            </div>
+            <div class="col-sm-3 text-center">
+                <div>
+                    <h6>Delivery Address</h6>
+                </div>
+            </div>
+            <div class="col-sm-3 text-center">
+                <div>
+                    <h6>Update Order Status </h6>
+                </div>
+            </div>
+            </div>
+
+            <div class="orders-divider"></div>
+
             {% for order in total_orders %}
             <div class="row shadow-sm-mb-3 my-3">
                 <div class="col-sm-1">
@@ -26,7 +55,7 @@
                 <div class="col-sm-2">
                     <p>Product: {{order.product_id.model}}</p>
                     <p>Quantity: {{order.quantity}}</p>
-                    <p>Amount: ₹{{order.total_cost}}</p>
+                    <p>Amount: ₹{{order.total_amount}}</p>
                 </div>
                 <div class="col-sm-2">
                     <div>User = {{order.user_id.first_name}} {{order.user_id.last_name}}</div>
@@ -46,20 +75,27 @@
                     <p>Status: {{order.status}}</p>
                     <form action="{% url 'update-order' id %}" method="post">
                         {% csrf_token %}
-                        <input type="hidden" value="{{order.id}}" name="orderid">
-                        <select class="form-select" aria-label="Default select example" name="orderStatus" id="">
-                            <option value="" selected="selected" disabled>{{order.status}}</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
-                        </select>
                         {% if order.status == 'Cancelled' %}
                         <div class="pogress">
                             <div class="progress-bar" role="progressbar" style="height: 20%;" aria-valuemax="100"
                                 aria-valuemin="0" aria-valuenow="20"></div>
-                                <p class="btn-danger p-1 m-1">Order is cancelled by user</p>
+                                <p class="btn-danger p-1 m-1">Order is cancelled</p>
+                        </div>  
+                        {% elif order.status == 'Delivered' %}
+                        <div class="pogress">
+                            <div class="progress-bar" role="progressbar" style="height: 20%;" aria-valuemax="100"
+                                aria-valuemin="0" aria-valuenow="20"></div>
+                                <p class="btn-success p-1 m-1">Succefully Delivered</p>
                         </div>  
                         {% else %}
+                            <input type="hidden" value="{{order.id}}" name="orderid">
+                            <select class="form-select" aria-label="Default select example" name="orderStatus" id="">
+                                <option value="" selected="selected" disabled>{{order.status}}</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+
                             <button type="submit" class="btn btn-primary my-2">Update Status</button>
 
                         {% endif %}

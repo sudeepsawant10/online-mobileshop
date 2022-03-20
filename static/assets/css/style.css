@@ -6,3 +6,7 @@
     padding: 10px;
 }
 
+.orders-divider{
+    border-bottom:  1px solid #8c8b8b;
+    size: 40px;
+}

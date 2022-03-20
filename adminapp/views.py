@@ -16,7 +16,7 @@ def products(request, **kwargs):
     return render(request, 'adminapp/products.html',context)
 
 def orders(request, **kwargs):
-    total_orders = Order.objects.all().order_by('date')
+    total_orders = Order.objects.all()
     context = {
         'id':kwargs['id'],
         'total_orders':total_orders,
@@ -29,7 +29,7 @@ def add_product(request, **kwargs):
     context = {
         'id':kwargs['id'],
         'brands':brands,
-        'product_form':product_form
+        'product_form':product_form,
     }
 
     if request.method == 'POST':
@@ -50,6 +50,7 @@ def add_product(request, **kwargs):
         else:
             print("invalid product form")
             product_form = AddProduct()
+            context['product_form'] = product_form
             return render(request, 'adminapp/add_product.html',context)
     
     return render(request, 'adminapp/add_product.html',context)

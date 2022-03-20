@@ -43,7 +43,7 @@ class AddReview(forms.ModelForm):
     # order = models.ForeignKey(Order, on_delete=models.CASCADE)
     # product = models.ForeignKey(Product, on_delete=models.CASCADE)
     title = forms.CharField(max_length=100, required=True)
-    description = forms.CharField(max_length=100, required=True)
+    description = forms.CharField(max_length=255, required=True)
     stars = forms.IntegerField(required=True)
     class Meta:
         model = Review
