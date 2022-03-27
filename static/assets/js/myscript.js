@@ -1,7 +1,10 @@
 $(".plus-cart").click(function () {
   console.log("Plus clicked");
+  // take product id
   var id = $(this).attr("pid").toString();
+  //
   var eml = this.parentNode.children[2];
+  console.log(eml);
   console.log(id);
   // console.log(eml);
   $.ajax({
@@ -88,5 +91,32 @@ function valueChange() {
 }
 
 $('.cancel-order').click(function(){
-    confirm("Ary you sure to cancel order?")
+    alert("Your order will be cancelled and order amount refund within 24 hrs.");
+});
+
+function showPassword() {
+    var pass = document.getElementById('myInput');
+    console.log(pass);
+    if (pass.type == 'password'){
+        pass.type = 'text';
+    }
+    else {
+      pass.type='password';
+    }
+
+}
+function showPassword2() {
+    var pass = document.getElementById('myInput2');
+    console.log(pass);
+    if (pass.type == 'password'){
+        pass.type = 'text';
+    }
+    else {
+      pass.type='password';
+    }
+
+}
+
+$('.pay-by-card').click(function(){
+  alert("After payment successful your order will be placed!");
 });

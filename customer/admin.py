@@ -26,8 +26,8 @@ class OrderModelAdmin(admin.ModelAdmin):
 
 @admin.register(Cart)
 class CartModelAdmin(admin.ModelAdmin):
-    list_display = ['user', 'product', 'item', 'quantity']
+    list_display = ['user', 'product', 'quantity']
 
 @admin.register(Review)
 class ReviewModelAdmin(admin.ModelAdmin):
-    list_display = ['title', 'description', 'product', 'stars']
+    list_display = ['title', 'description', 'product_id', 'stars']

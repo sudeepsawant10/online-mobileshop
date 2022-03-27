@@ -40,19 +40,31 @@ def check_name(name):
         if num in name:
             raise forms.ValidationError("Enter valid name")
 
+def check_email(email):
+    ind = email.index('@')
+    # print("index", ind)
+    char = False
+    for ch in email[:ind]:
+        # for char exist in email
+        if ch not in numbers:
+            char = True
+
+    if char == False:
+        raise forms.ValidationError("Email should contain characters")
+
     
 class UserCreate(UserCreationForm, forms.ModelForm, forms.Form):
     # Giving restriction to the some form attributes
     user_name = forms.CharField(validators=[check_username], error_messages={'required':'Username is required'}, required=True)
     first_name = forms.CharField(validators=[check_name],
-        max_length=30, help_text='Optional.')
+        max_length=30,error_messages={'required':'first name is required'})
     last_name = forms.CharField(validators=[check_name],
-        max_length=30,  help_text='Optional.')  # necessary if required=True
-    password1 = forms.CharField(validators=[check_password],error_messages={'required':'Password is required','min_length':'Password length must be greater than 8 character.',},
+        max_length=30, error_messages={'required':'last name is required'})  # necessary if required=True
+    password1 = forms.CharField(validators=[check_password],error_messages={'required':'Password is required','min_length':'Password length must be greater than 8 character.', },
         min_length=8, max_length=15, required=True)  
     password2 = forms.CharField(validators=[check_password],error_messages={'required':'Please confirm your password',},
         min_length=8, max_length=15, required=True)  
-    email = forms.EmailField(error_messages={'required':'Email is required'},
+    email = forms.EmailField(validators=[check_email], error_messages={'required':'Email is required'},
         max_length=254)
     contact = forms.CharField(validators=[check_contact],error_messages={'required':'Contact is required', 'max_length':'Contact must be 10 digit number'},
         max_length=10)

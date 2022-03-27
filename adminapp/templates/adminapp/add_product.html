@@ -6,14 +6,13 @@
   <div class="col-6 offset-sm-3" >
       <h3>Add Mobile Product</h3>
         <form action="{% url 'add_product' id %}" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-
+          {% csrf_token %}
             {% if product_form.errors %}
-
                 {% for field in product_form %}
                 <!-- if error ocuures that is invalid inputs -->
                     {% for error in field.errors %}
-                    <div class="alert alert-danger">
+
+                    <div class="alert alert-danger alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -23,7 +22,7 @@
                 {% endfor %}
 
                 {% for error in form.non_field_errors %}
-                <div class="alert alert-danger">
+                <div class="alert alert-danger alert-dismissible">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -33,52 +32,52 @@
               {% endif %}
 
               <label for="inputAddress" class="form-label">Select Brand</label>
-            <select class="form-select" aria-label="Default select example" name="selectedBrand">
-              <option selected="selected" disabled>choose brand name</option>
+            <select class="form-select" aria-label="Default select example" name="selectedBrand" required>
+              <option selected="selected" disabled >choose brand name</option>
               {% for brand in brands %}
                 <option value="{{brand.id}}" >{{brand.name}}</option>
               {% endfor %}
             </select>
                 
             <div class="col-12">
-              <label for="inputAddress" class="form-label">Model name</label>
-              <input type="text" class="form-control" id="inputAddress" name="model" >
+              <label class="form-label">Model name</label>
+              <input type="text" class="form-control" id="inputAddress" name="model" minlength="2" maxlength="100">
             </div>
             <div class="col-12">
-              <label for="inputAddress2" class="form-label">Short Description of mobile</label>
-              <input type="text" class="form-control" id="inputAddress2" name="short_description" >
+              <label class="form-label">Short Description of mobile</label>
+              <input type="text" class="form-control" id="inputAddress2" name="short_description" minlength="8" maxlength="255">
             </div>
             <div class="col-12">
-              <label for="inputCity" class="form-label">Camera</label>
-              <input type="text" class="form-control" id="inputCity" name="camera">
+              <label class="form-label">Camera</label>
+              <input type="text" class="form-control" id="inputCity" name="camera" minlength="3" maxlength="100">
             </div>
             <div class="col-12">
-              <label for="inputCity" class="form-label">Display</label>
-              <input type="text" class="form-control" id="inputCity" name="display">
+              <label class="form-label">Display</label>
+              <input type="text" class="form-control" id="inputCity" name="display" minlength="2" maxlength="100">
             </div>
             <div class="col-12">
-              <label for="inputCity" class="form-label">Memory</label>
-              <input type="text" class="form-control" id="inputCity" name="memory">
+              <label class="form-label">Memory</label>
+              <input type="text" class="form-control" id="inputCity" name="memory" minlength="2" maxlength="100">
             </div>
             <div class="col-12">
-              <label for="inputCity" class="form-label">Processor</label>
-              <input type="text" class="form-control" id="inputCity" name="processor">
+              <label class="form-label">Processor</label>
+              <input type="text" class="form-control" id="inputCity" name="processor" minlength="2" maxlength="100">
             </div>
             <div class="col-12">
-              <label for="inputCity" class="form-label">Operating System (Andorid/ios versions)</label>
-              <input type="text" class="form-control" id="inputCity" name="os">
+              <label class="form-label">Operating System (Andorid/ios versions)</label>
+              <input type="text" class="form-control" id="inputCity" name="os" minlength="2" maxlength="100">
             </div>
             <div class="col-12">
-              <label for="inputCity" class="form-label">Quantity Available</label>
-              <input type="number" class="form-control" id="inputCity" name="quantity" >
+              <label class="form-label">Quantity Available</label>
+              <input type="number" class="form-control" id="inputCity" name="quantity" min="1" max="100">
             </div>
             <div class="col-12">
-              <label for="inputCity" class="form-label">Selling Price</label>
-              <input type="number" class="form-control" id="inputCity" name="selling_price" >
+              <label class="form-label">Selling Price</label>
+              <input type="number" class="form-control" id="inputCity" name="selling_price" min="1000">
             </div>
             <div class="col-12">
-              <label for="inputCity" class="form-label">Discount Price</label>
-              <input type="number" class="form-control" id="inputCity" name="discount_price" >
+              <label class="form-label">Discount Price</label>
+              <input type="number" class="form-control" id="inputCity" name="discount_price" min="1000">
             </div>
 
             Select image to upload:

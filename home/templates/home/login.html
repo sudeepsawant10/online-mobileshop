@@ -26,13 +26,14 @@
         {% endif %}
         <div class="mb-3">
             <label class="form-label">Email address</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" name="inputEmail"
+            <input type="email" class="form-control" id="login-email" name="inputEmail"
              aria-describedby="emailHelp">
         </div>
        
         <div class="mb-3">
             <label class="form-label">Password</label>
-            <input type="password" class="form-control" name="inputPassword" minlength="8" maxlength="15">
+            <input type="password" class="form-control" name="inputPassword" minlength="8" maxlength="15" id="myInput2">
+            <input type="checkbox" onclick="showPassword2()" class="m-1">Show Password
         </div>
 
         <button type="submit" class="btn btn-primary">Login</button>

@@ -4,16 +4,12 @@
 {% block content %}
 <div class="container my-5">
   <div class="row">
-    <h3>Welcome {{user}}</h3>
 
-    <h5>Total Amount: {{total_amount}}</h5>
-    <small>Term and Condition: Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, ullam saepe! Iure
-      optio repellat dolor velit, minus rem. Facilis cumque neque numquam laboriosam, accusantium adipisci nisi nihil
-      in et quis?</small>
-
+    <h2 class="mb-3">Total Amount: ₹{{total_amount}}</h2>
+    
       <div class="col-md-8">
         <div>
-          <h4 class="header-title">Payment Selection {{addr_id}}</h4>
+          <h4 class="header-title">Payment Selection</h4>
           <!-- Credit/Debit Card box-->
           <div class="border p-3 mb-3 rounded">
             <form action="{% url 'do_payment' id addr_id %}" method="post">
@@ -44,6 +40,18 @@
                 </div>
                 {% endfor %}
                 {% endif %}
+
+                {% if messages %}
+                  {% for message in messages %}
+                  <div class="alert alert-dismissible fade show {% if message.tags %}alert-{{ message.tags }}{% endif %} col-xl-12"
+                      role="alert">
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                      {{ message }}
+                  </div>
+                  {% endfor %}
+                {% endif %}
               <div class="form-check">
                 <input type="radio" id="BillingOptRadio1" name="billingOptions" value="card-payment" class="form-check-input" >
                 <label class="form-check-label font-16 fw-bold" for="BillingOptRadio1">Credit / Debit Card</label>
@@ -67,7 +75,7 @@
               
                 <input type="hidden" aid="{{addr_id}}" name="aid">
                 <div class="form-check">
-                  <button type="submit" class="btn btn-primary">Pay {{total_amount}} & Order</button>
+                  <button type="submit" class="btn btn-primary pay-by-card">Pay {{total_amount}} & Order</button>
                 </div>
               </div> <!-- end row -->
           </div>
@@ -91,7 +99,7 @@
   
           <div class="row mt-4">
             <div class="col-sm-6">
-              <a href="ecommerce-cart.html" class="btn btn-secondary">
+            <a href="{% url 'cart' id %}" class="btn btn-secondary">
                 <i class="mdi mdi-arrow-left"></i> Back to Shopping Cart </a>
             </div> <!-- end col -->
             

@@ -74,56 +74,11 @@ def Login(request):
                 messages.warning(request, "Invalid email or password")
                 return redirect('login')
         else:
-            messages.warning(request, "invalid username or password")
+            messages.warning(request, "Enter login credentials")
             return redirect('login')
                 
     return render(request, "home/login.html")
             
-
-# def addUser(request):
-    user_create = UserCreate(request.POST)
-    print("post request")
-
-    # data is filled according to requirements and restirctions then it is valid
-    if user_create.is_valid():
-        # ready to save temporarily save
-        user_create = user_create.save(commit=False)
-        # permenent save
-        user_create.save()
-        # display this message after saving data into user database
-        messages.success(request, 'Account created successfully.')
-        # go to login url
-        return redirect('login')
-    else:
-        # messages.errors(request, user_create_form.errors)
-        # if not valid again take the structure and restriction of form and pass to regitser.html
-        context = {'user_create': user_create}
-
-        # add into form
-        return render(request, 'home/register.html', context)
-    
-def LoginForm(request):
-    return render(request, 'home/login.html')
-
-def checkCredentials(request):
-    if request.method == 'POST':
-        user = authenticate(request, email=request.POST['inputEmail'], password=request.POST['inputPassword'])
-        if user:
-            login(request, user)
-            if user.is_staff:
-                return redirect('userhome', id=user.id)
-            elif user.is_active:
-                return redirect('userhome', id=user.id)
-            else:
-                messages.warning(request, "invalid username or password")
-                return redirect('login')
-        else:
-            messages.warning(request, "invalid username or password")
-            return redirect('login')
-    else:
-        messages.warning(request, "invalid username or password")
-        return redirect('login')
-
 
 def Logout(request):
     #to logout use this inbuilt function

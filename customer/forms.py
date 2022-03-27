@@ -14,21 +14,21 @@ def check_pin(pin):
 
 def check_card(card):
     if(len(card)<16 or len(card)>16):
-        raise forms.ValidationError("Enter valid card number")
+        raise forms.ValidationError("Enter valid 16 digit card number")
 
 class CreateAddress(forms.ModelForm):
-    flat_no = forms.CharField(max_length=50, required=True)
-    building = forms.CharField(validators=[check_number], max_length=100, required=True)
-    area = forms.CharField(validators=[check_number], max_length=100, required=True)
-    city = forms.CharField(validators=[check_number], max_length=100,)
-    pin = forms.IntegerField(validators=[check_pin])
+    flat_no = forms.CharField(max_length=50, required=True , error_messages={'required':'Please enter flat or room number.'})
+    building = forms.CharField(validators=[check_number], max_length=100, required=True , error_messages={'required':'Please enter building name'})
+    area = forms.CharField(validators=[check_number], max_length=100, required=True , error_messages={'required':'area is required'})
+    city = forms.CharField(validators=[check_number], max_length=100, error_messages={'required':'Please enter city.'})
+    pin = forms.IntegerField(validators=[check_pin] , error_messages={'required':'Pin is required'})
 
     class Meta:
         model = Address
         fields = ['flat_no', 'building', 'area', 'city', 'pin']
 
 class PaymentForm(forms.ModelForm):
-    card_number = forms.CharField(validators=[check_card],max_length=16, required=True)
+    card_number = forms.CharField(validators=[check_card],max_length=16, required=True, error_messages={'required':'Card number is required'})
     # building = forms.CharField(validators=[check_number], max_length=100, required=True)
     # area = forms.CharField(validators=[check_number], max_length=100, required=True)
     # city = forms.CharField(validators=[check_number], max_length=100,)
@@ -42,9 +42,9 @@ class AddReview(forms.ModelForm):
     # id = models.AutoField(primary_key=True)
     # order = models.ForeignKey(Order, on_delete=models.CASCADE)
     # product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    title = forms.CharField(max_length=100, required=True)
-    description = forms.CharField(max_length=255, required=True)
-    stars = forms.IntegerField(required=True)
+    title = forms.CharField(max_length=100, required=True, error_messages={'required':'Title is required'})
+    description = forms.CharField(max_length=255, required=True, error_messages={'required':'Descritption is required'})
+    stars = forms.IntegerField(required=True, error_messages={'required':'Please enter stars'})
     class Meta:
         model = Review
         fields = ['title', 'description', 'stars']

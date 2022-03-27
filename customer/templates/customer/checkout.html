@@ -17,9 +17,7 @@
       </div>
       {% endfor %}
       <h5>Total Amount: {{total_amount}}</h5>
-      <small>Term and Condition: Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, ullam saepe! Iure
-        optio repellat dolor velit, minus rem. Facilis cumque neque numquam laboriosam, accusantium adipisci nisi nihil
-        in et quis?</small>
+     
     </div>
     <div class="col-sm-4 offset-sm-1">
           {% if messages %}
@@ -33,9 +31,10 @@
           </div>
           {% endfor %}
           {% endif %}
-      <h4>Select Shipping Address</h4>
+      <h4>Select Delivery Address</h4>
       <hr>
-      <form action="{% url 'payment' id %}">
+      <form action="{% url 'payment' id %}" method="post">
+        {% csrf_token %}
         {% for addr in addresses %}
  
         <div class="card"> 
@@ -49,6 +48,8 @@
             id="custadd{{forloop.counter}}">
           <label class="form-check-label fw-bold" for="custadd{{forloop.counter}}"> Address: {{forloop.counter}} </label>
         </div>
+        {% empty %}
+          <h3>No address! Please add your address</h3>
 
         {% endfor %}
 

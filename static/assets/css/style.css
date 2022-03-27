@@ -1,12 +1,18 @@
-.footer {
-    height: 80px;
-    background-color: rgb(5, 23, 36);
-    color: white;
-    text-align: center;
-    padding: 10px;
-}
-
 .orders-divider{
     border-bottom:  1px solid #8c8b8b;
     size: 40px;
+}
+
+.nav-item:hover{
+    font-size: 18px;
+}
+
+.d-block{
+    height: 600px;
+    width: 100%;
+    
+}
+
+#register-email, #login-email, #register-username{
+    text-transform: lowercase;
 }

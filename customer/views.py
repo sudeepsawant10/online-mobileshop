@@ -127,7 +127,7 @@ def product_details(request, **kwargs):
     product = Product.objects.get(id=kwargs['pid'])
     product_match_for_review = False
     order_for_review = 0
-    reviews = Review.objects.filter(product=product)
+    reviews = Review.objects.filter(product_id=product)
     # print(reviews)
     add_review = AddReview()
     print(product.id)
@@ -164,9 +164,9 @@ def product_details(request, **kwargs):
                 print("valid form review")
                 add_review = add_review.save(commit=False)
                 order_instance = Order.objects.get(pk=order_for_review)
-                add_review.user = order_instance.user_id
-                add_review.order = order_instance
-                add_review.product = order_instance.product_id
+                add_review.user_id = order_instance.user_id
+                add_review.order_id = order_instance
+                add_review.product_id = order_instance.product_id
                 add_review.save()
                 messages.success(request, 'Review added successfully')
                 return render(request, "customer/product-details.html", context)
@@ -197,9 +197,8 @@ def add_to_cart(request, **kwargs):
         'id': kwargs['id'],
         'pid': kwargs['pid'],
     }
-    Cart(user=user, product=product, item=1, quantity=1).save()
+    Cart(user=user, product=product, quantity=1).save()
     return redirect('cart', id=kwargs['id'])
-
 
 def cart(request, **kwargs):
     if request.user.is_authenticated:
@@ -301,22 +300,10 @@ def plus_cart(request):
         c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
         c.quantity += 1
         c.save()
-
-        # amount = 0.0
-        # shipping_amount=40.0
-        # total_amount = 0.0
-        # cart_product = [p for p in Cart.objects.all() if p.user == request.user]
-        # for p in cart_product:
-        #     tempamount = (p.quantity*p.product.discount_price)
-        #     amount+=tempamount
         data = {
             'quantity': c.quantity,
-            # 'amount': amount,
-            # 'total_amount':amount + shipping_amount,
         }
         data.update(price_detail(user))
-
-        # print(data,'Plus cart data')
         return JsonResponse(data)
 
 
@@ -329,7 +316,6 @@ def minus_cart(request):
         user = request.user
         c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
         c.quantity -= 1
-        # saving in db
         c.save()
 
         data = {
@@ -351,8 +337,13 @@ def remove_cart(request):
         c.delete()
         data = {}
         data.update(price_detail(user))
-        print(data)
-        return JsonResponse(data)
+        cart_products = list(Cart.objects.filter(user=user))
+        if(len(cart_products)==0):
+            return redirect('cart', id=user.id)
+        else:
+            print(data)
+            print(len(cart_products))
+            return JsonResponse(data)
 
 
 def checkout(request, **kwargs):
@@ -382,7 +373,7 @@ def checkout(request, **kwargs):
 
 def payment(request, **kwargs):
     user = request.user
-    custid = request.GET.get('custid')
+    custid = request.POST.get('custid')
     payment_form = PaymentForm()
     context = {
         'id': kwargs['id'],
@@ -393,9 +384,9 @@ def payment(request, **kwargs):
         address = Address.objects.get(id=custid)
     except (BaseException )as e:
         print("exception in")
-        context['addr_id'] = 0
-        messages.info(request, 'Please check your account and add address')
-        return render(request, 'customer/checkout.html', context)
+        context['addr_id'] = custid
+        messages.info(request, 'Please select or add your address in account')
+        return redirect('checkout', id=user.id)
     cart = Cart.objects.filter(user=user)
     context['addr_id']=custid
     cart_product = [p for p in Cart.objects.all() if p.user == request.user]
@@ -416,14 +407,12 @@ def demo(request, **kwargs):
 
 def do_payment(request, **kwargs):
     user = request.user
-    payment_form = PaymentForm()
     custid = kwargs['addr_id']
     print("***********************--------------*", custid)
 
     print("payment method called")
     context = {
         'id': kwargs['id'],
-        'payment_form': payment_form,
         'addr_id': kwargs['addr_id'],
     }
     context.update(price_detail(user))
@@ -475,7 +464,9 @@ def do_payment(request, **kwargs):
                 return redirect('orders', id=user.id)
                 # return render(request, 'customer/orders.html', context)
             else:
+                # payment_form = PaymentForm()
                 print("payment Failed")
+                context['payment_form']=payment_form
                 return render(request, 'customer/payment.html', context)
         elif input_value == 'cod-order':
             pay = Payment()
@@ -509,7 +500,8 @@ def do_payment(request, **kwargs):
             return redirect('orders', id=user.id)
             # return HttpResponse("cod")
         else:
-            return HttpResponse("NO GET")
+            messages.warning(request, 'Please select payment method')
+            return render(request, 'customer/payment.html', context)
     else:
         payment_form = PaymentForm()
         context = {

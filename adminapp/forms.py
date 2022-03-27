@@ -1,37 +1,21 @@
 from django import forms
 from customer.models import Product, Brand
 
-class AddProduct(forms.ModelForm):
-    model = forms.CharField(max_length=255, required=True)
-    short_description = forms.CharField(max_length=255, required=True)
-    camera = forms.CharField(max_length=255, required=True)
-    display = forms.CharField(max_length=255, required=True)
-    memory = forms.CharField(max_length=100, required=True)
-    processor = forms.CharField(max_length=100, required=True)
-    os = forms.CharField(max_length=100, required=True)
-    image = forms.ImageField(required=True)
-    quantity = forms.IntegerField(required=True)
-    selling_price = forms.IntegerField(required=True)
-    discount_price = forms.IntegerField(required=True)
+class AddProduct(forms.ModelForm, forms.Form):
+    model = forms.CharField(max_length=255, required=True, error_messages={'required':'Please enter model name',})
+    short_description = forms.CharField(max_length=255, required=True, error_messages={'required':'Please enter short_description for model',})
+    camera = forms.CharField(max_length=255, required=True, error_messages={'required':'Please enter camera details',})
+    display = forms.CharField(max_length=255, required=True, error_messages={'required':'Please enter display details',})
+    memory = forms.CharField(max_length=100, required=True, error_messages={'required':'Please enter memroy details',})
+    processor = forms.CharField(max_length=100, required=True, error_messages={'required':'Processor details are required',})
+    os = forms.CharField(max_length=100, required=True, error_messages={'required':'Model os is required',})
+    image = forms.ImageField(required=True, error_messages={'required':'Image of model is required',})
+    quantity = forms.IntegerField(required=True, error_messages={'required':'Please enter quantity available.',})
+    selling_price = forms.IntegerField(required=True, error_messages={'required':'Selling_price is required',})
+    discount_price = forms.IntegerField(required=True, error_messages={'required':'Discount_price is required',})
 
     class Meta:
         model = Product
         fields = ['model','short_description','camera','display','memory','processor','os','image','quantity','selling_price','discount_price']
         # fields = ['model','short_description','camera','image']
 
-"""
-class Product(models.Model):
-    id = models.AutoField(primary_key=True)
-    brand_id = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True)
-    model = models.CharField(max_length=255, blank=False, null=False)
-    short_description = models.CharField(max_length=255, blank=False, null=False)
-    camera = models.CharField(max_length=255, blank=False, null=False)
-    display = models.CharField(max_length=255, blank=False, null=False)
-    memory = models.CharField(max_length=100, blank=False, null=False)
-    processor = models.CharField(max_length=100, blank=False, null=False)
-    os = models.CharField(max_length=100, blank=False, null=False)
-    image = image = models.ImageField(upload_to='productimg')
-    quantity = models.IntegerField(blank=True, null=True)
-    selling_price = models.IntegerField(default=8000, blank=True)
-    discount_price = models.IntegerField(default=8000)
-"""

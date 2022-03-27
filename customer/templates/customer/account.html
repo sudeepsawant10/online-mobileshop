@@ -6,8 +6,21 @@
  <div class="row">
   <h3 class="text-primary">Hello {{user}}</h3>
   
-  <section class="p-1 p-lg-0 text-center text-sm-start">
+  <section class="p-1 p-lg-0  text-sm-start">
     <div class="container">
+      <div>
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-dismissible fade show {% if message.tags %}alert-{{ message.tags }}{% endif %} col-10"
+            role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+      </div>
         <div class="d-sm-flex justify-content-between">
             <div class="align-items-center">
                <div class="myprofile">
@@ -22,19 +35,8 @@
               </div>
              
             </div>
-            <div>
-                {% if messages %}
-              {% for message in messages %}
-              <div class="alert alert-dismissible fade show {% if message.tags %}alert-{{ message.tags }}{% endif %} col-8"
-                  role="alert">
-                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                  </button>
-                  {{ message }}
-              </div>
-              {% endfor %}
-              {% endif %}
-            </div>
+
+            
             
             <div class="col-md-8">
               <h3>Personal Information</h3>
