@@ -20,42 +20,37 @@ Home
     </div>
     {% endfor %}
     {% endif %}
-
-    <div class="row g-4 ">
+    <div class="my-4"><center><h2>Customers</h2></center></div>
+    <div class="row g-4 text-center ">
         <div class="col-3 text-center">
-            <h5>Image </h5>
+            <h5>Customer Name</h5>
         </div>
-        <div class="col-3 ">
-            <h5>Model</h5>
+        <div class="col-3 text-center">
+            <h5>Email</h5>
         </div>
-        <div class="col-3 ">
-            <h5>Prices </h5>
+        <div class="col-3 text-center">
+            <h5>Contact </h5>
         </div>
-        <div class="col-3 ">
-            <h5>Brand </h5>
+        <div class="col-3 text-center">
+            <h5>Remove customer </h5>
         </div>
         <div class="orders-divider"></div>
 
-        {% for product in products %}
+        {% for customer in customers%}
         <div class="col-3">
-            <center>
-                <img src="{{product.image.url}}" style="height: 80px; width: auto;" alt="" class="card-img-custom card-img-top rounded  " title="This image is taken from www.amazon.in">
-            </center>
+            <div>{{customer.first_name}} {{customer.last_name}} {{customer.id}}</div>
         </div>
         <div class="col-3">
-            <div>{{product.model}}</div>
-            <div>{{product.short_description}}</div>
+            <div>Email = {{customer.email}}</div>
         </div>
         <div class="col-3">
-            <div>Discount price = {{product.discount_price}}</div>
-            <div>Selling price = {{product.selling_price}}</div>
+            <div>Contact = {{customer.contact}}</div>
         </div>
         <div class="col-3">
-            {{product.brand_id.name}}
-            <form action="{% url 'remove_product' id %}" method="post">
+            <form action="{% url 'remove_customer' id %}" method="post">
                 {% csrf_token %}
-                <input type="hidden" value="{{product.id}}" name="getProduct">
-                <button type="submit" class="btn btn-primary m-2">Remove Mobile</button>
+                <input type="hidden" value="{{customer.id}}" name="getCustomer">
+                <button type="submit" class="btn btn-primary m-2">Remove Customer</button>
             </form>
         </div>
         <div style="height:4px; background-color: rgb(59, 55, 50,0.2);">

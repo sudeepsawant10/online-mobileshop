@@ -27,16 +27,10 @@ def index(request, **kwargs):
         all_products.append(prod[:4])
     product_list = []
 
-    for item in brands:
-        #     prod = Product.objects.filter(brand_id__name=item.name)
-        brand_names.append(item.name)
-    # print(all_products)
-    # custome_search(request)
     context = {
         'id': kwargs['id'],
         'products': products,
         'all_products': all_products,
-        'brand_names': brand_names,
     }
     # print(context['products'])
     return render(request, 'customer/index.html', context)
@@ -67,60 +61,6 @@ def search(request, **kwargs):
         'query': query,
     }
     return render(request, 'customer/search.html', context)
-
-
-def custome_search(request):
-    query = request.GET.get('search')
-    allprods = []
-    allproducts = Product.objects.all()
-    brands = {product.brand_id.name for product in allproducts}
-    products = [item for item in allproducts if query in item.model.lower(
-    ) or query in item.short_description.lower() or query in item.brand_id.name]
-    # brandsof = [item['brand_id'].name for item in allproducts]
-    # print(brandsof)
-    # brand_products=Product.objects.values('brand_id','id')
-    # # set value
-    # cats = {item['brand_id'] for item in brand_products}
-    # # print(cats)
-    # for cat in cats:
-    #     prodtemp = Product.objects.filter(brand_id=cat)
-    #     print(prodtemp)
-    #     prod = [item for item in prodtemp if searchMatch(query, item)]
-    #     allprods.append(prod)
-    # print(allproducts[0])
-    # print(allproducts[0].brand_id.name)
-    # for product in allproducts:
-    #     brands.append(product.brand_id.name)
-    print(products)
-    # print(brands)
-    context = {
-        # 'products':allprods,
-        'query': query,
-    }
-    return render(request, 'customer/search.html', context)
-
-
-def searchMatch(query, item):
-    # print(query)
-    print(item)
-    if query.lower() in item.model.lower() or query in item.short_description.lower() or query in str(item.discount_price):
-        return True
-    else:
-        return False
-
-
-def customSearch(request):
-    products = Product.objects.all()
-    brands = Brand.objects.all()
-    cats = {item['name'] for item in brands}
-    print("hellloooo")
-    context = {
-        'id': kwargs['id'],
-        'products': products,
-        'brands': brands,
-    }
-    # print(context['products'])
-    return render(request, 'customer/index.html', context)
 
 
 def product_details(request, **kwargs):

@@ -23,17 +23,10 @@ def index(request):
     for cat in cat_list:
         prod = Product.objects.filter(brand_id=cat)
         all_products.append(prod[:4])
-    product_list=[]
     
-    for item in brands:
-    #     prod = Product.objects.filter(brand_id__name=item.name)
-        brand_names.append(item.name)
-    # print(all_products)
-    # custome_search(request)
     context = {
         'products':products,
         'all_products':all_products,
-        'brand_names': brand_names,
     }
     # print(context['products'])
     return render(request, 'home/index.html', context)

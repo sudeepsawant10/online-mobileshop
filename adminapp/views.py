@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
-from customer.models import Product, Order, Brand
+from customer.models import Product, Order, Brand, Address
+from home.models import User
 from .forms import AddProduct
 from django.contrib import messages
+from django.db.models import Q
 from django.http import HttpResponse
 
 
@@ -60,34 +62,22 @@ def add_product(request, **kwargs):
         }
         return render(request, 'adminapp/add_product.html',context)
 
-
-def add_address(request, **kwargs):
-    address_form = CreateAddress()
-    # user_create = UserCreate(instance=user)
+def remove_product(request, **kwargs):
+    products = Product.objects.all()
+    context = {
+        'id':kwargs['id'],
+        'products':products,
+    }
     if request.method == 'POST':
-        print("post called")
-        address_form = CreateAddress(request.POST)
-        if address_form.is_valid():
-            address_form = address_form.save(commit=False)
-            user = request.user
-            address_form.user = user
-            address_form.save()
-            messages.success(request, 'Address saved')
-            print("Address added")
-            return redirect('account', id=user.id)
-        else:
-            context = {
-                'id': kwargs['id'],
-                'address_form': address_form,
-            }
-            return render(request, 'customer/address.html', context)
-    else:
-        context = {
-            'id': kwargs['id'],
-            'address_form': address_form,
-        }
-        return render(request, 'customer/address.html', context)
+        pid = request.POST.get('getProduct')
+        print(pid)
+        product = Product.objects.get(pk=pid)
+        print(product)
+        product.delete()
+        messages.success(request, 'Product removed successfully')
+        return redirect('products', id=kwargs['id'])
 
+    return render(request, 'adminapp/products.html', context)
 
 def update_status(request, **kwargs):
     total_orders = Order.objects.all()
@@ -116,3 +106,29 @@ def update_status(request, **kwargs):
             return render(request, 'adminapp/total_orders.html', context)            
     else:
         return render(request, 'adminapp/total_orders.html', context)
+
+
+def customers(request, **kwargs):
+    customers = User.objects.filter(~Q(email='admin@gmail.com')).values()
+    address_list=[]
+    context = {
+        'id':kwargs['id'],
+        'customers':customers,
+    }
+    return render(request, 'adminapp/customers.html', context)
+
+def remove_customer(request, **kwargs):
+    customers = User.objects.filter(~Q(email='admin@gmail.com')).values()
+    address_list=[]
+    context = {
+        'id':kwargs['id'],
+        'customers':customers,
+    }
+    if request.method == 'POST':
+        id = request.POST.get('getCustomer')
+        user = User.objects.get(pk=id)
+        user.delete()
+        messages.success(request, 'Removed customer successfully')
+        return redirect('customers', id=kwargs['id'])
+    return render(request, 'adminapp/customers.html', context)
+    
