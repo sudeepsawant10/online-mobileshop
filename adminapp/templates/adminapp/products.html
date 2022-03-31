@@ -38,8 +38,12 @@ Home
 
         {% for product in products %}
         <div class="col-3">
+           
             <center>
-                <img src="{{product.image.url}}" style="height: 80px; width: auto;" alt="" class="card-img-custom card-img-top rounded  " title="This image is taken from www.amazon.in">
+                <a href="{% url 'userproduct-details' id product.id %}" class="imgHover" title="This image is taken from www.amazon.in">
+                    <img src="{{product.image.url}}" style="height: 80px; width: auto;" alt="" class="card-img-custom card-img-top rounded  " title="This image is taken from www.amazon.in">
+              </a>
+                
             </center>
         </div>
         <div class="col-3">
