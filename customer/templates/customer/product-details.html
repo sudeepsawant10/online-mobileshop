@@ -24,11 +24,7 @@
             </h4> 
             <br>
             {% if user.is_active %}
-                {% if prouduct_exist_in_cart %}
-                    <a href="{% url 'cart' id product.id %}" class="btn btn-primary px-5 py-2">Go to cart</a>
-                {% else %}
                     <a href="{% url 'add-to-cart' id product.id %}" class="btn btn-primary px-5 py-2">Add to Cart</a>
-                {% endif %}
             {% else %}
             <a href="{% url 'login' %}" class="btn btn-primary px-5 py-2">Add to Cart</a>
             {% endif %}
@@ -50,6 +46,20 @@
             <h3>Add your review about product and our service</h3>
             <form action="{% url 'userproduct-details' id pid %}" method="post" class="">
                 {% csrf_token %}
+                {% if add_review.errors %}
+
+                    {% for field in add_review %}
+                    <!-- if error ocuures that is invalid inputs -->
+                        {% for error in field.errors %}
+                        <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                        {% endfor %}
+                    {% endfor %}
+                {% endif %}    
                 <!-- <span class="login100-form-title">
                 </span> -->
                 {% if messages %}

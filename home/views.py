@@ -12,21 +12,18 @@ from customer.models import Product, Brand
 
 # Create your views here.
 def index(request):
-    products = Product.objects.all()
-    brands = Brand.objects.all()
-    brand_cat = Product.objects.values('brand_id', 'id')
+    brand_cat = Product.objects.values('brand_id', 'id').order_by('brand_id')
     brand_names=[]
     all_products=[]
 
-    cat_list = {item['brand_id'] for item in brand_cat}
-    print(cat_list)
-    for cat in cat_list:
-        prod = Product.objects.filter(brand_id=cat)
-        all_products.append(prod[:4])
+    brands = {item['brand_id'] for item in brand_cat}
+    for br in brands:
+        products = Product.objects.filter(brand_id=br)
+        all_products.append(products[:4])
     
     context = {
         'products':products,
-        'all_products':all_products,
+        'all_products': all_products[:3],
     }
     # print(context['products'])
     return render(request, 'home/index.html', context)

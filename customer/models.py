@@ -6,7 +6,7 @@ import datetime
 
 class Address(models.Model):
     id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     flat_no = models.CharField(max_length=50, blank=True, null=True)
     building = models.CharField(max_length=100, blank=True, null=True)
     area = models.CharField(max_length=100, blank=True, null=True)
@@ -14,15 +14,13 @@ class Address(models.Model):
     pin = models.IntegerField(blank=True,null=True)
 
     def __str__(self):
-        return str(self.id)+" "+ self.user.first_name + " " + self.area +" " + str(self.pin)
+        return str(self.id)+" "+ self.user_id.first_name + " " + self.area +" " + str(self.pin)
 
 
 
 class Payment(models.Model):
     payments = (
         ('COD', 'COD'),
-        ('UPI', 'UPI'),
-        ('Net Banking', 'Net Banking'),
         ('Credit/Debit Card', 'Credit/Debit Card'),
     )
     id = models.AutoField(primary_key=True)
@@ -64,16 +62,16 @@ class Product(models.Model):
 
 class Cart(models.Model):
     id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return str(self.id) + " " + self.product.model + " " + str(self.quantity)
+        return str(self.id) + " " + self.product_id.model + " " + str(self.quantity)
 
     @property
     def total_cost(self):
-        self.quantity * self.product.discount_price
+        self.quantity * self.product_id.discount_price
 
 order_status = (
     ('Ordered', 'Ordered'),
@@ -86,7 +84,7 @@ class Order(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
     payment_id = models.ForeignKey(Payment, on_delete=models.CASCADE, null=True)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, null=True)
+    address_id = models.ForeignKey(Address, on_delete=models.CASCADE, null=True)
     quantity = models.IntegerField(default=1, blank=False, null=False)
     date = models.DateTimeField(default=datetime.datetime.now)
     total_amount = models.IntegerField()

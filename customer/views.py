@@ -14,25 +14,21 @@ from django.utils import timezone
 
 
 def index(request, **kwargs):
-    products = Product.objects.all()
-    brands = Brand.objects.all()
-    brand_cat = Product.objects.values('brand_id', 'id')
-    brand_names = []
+    user = request.user
+    brand_cat = Product.objects.values('brand_id', 'id').order_by('brand_id')
     all_products = []
+    # set of all brands
+    brands = {item['brand_id'] for item in brand_cat}
 
-    cat_list = {item['brand_id'] for item in brand_cat}
-    print(cat_list)
-    for cat in cat_list:
-        prod = Product.objects.filter(brand_id=cat)
-        all_products.append(prod[:4])
-    product_list = []
+    # Adding each brand 4 products into list
+    for br in brands:
+        products = Product.objects.filter(brand_id=br)
+        all_products.append(products[:4])
 
     context = {
         'id': kwargs['id'],
-        'products': products,
-        'all_products': all_products,
+        'all_products': all_products[:3],
     }
-    # print(context['products'])
     return render(request, 'customer/index.html', context)
 
 
@@ -82,18 +78,14 @@ def product_details(request, **kwargs):
                 print("product matched for review")
                 product_match_for_review = True
                 order_for_review = mo['id']
-        prouduct_exist_in_cart = False
         print(product_match_for_review)
         print(order_for_review)
 
-        # check in db
-        prouduct_exist_in_cart = Cart.objects.filter(Q(product=kwargs['pid']) & Q(user=kwargs['id'])).exists()
         context = {
             'id': kwargs['id'],
             'pid': kwargs['pid'],
             'product': product,
             'product_match_for_review':product_match_for_review,
-            'product_exist_in_cart': prouduct_exist_in_cart,
             'add_review':add_review,
             'reviews':reviews
         }
@@ -111,8 +103,8 @@ def product_details(request, **kwargs):
                 messages.success(request, 'Review added successfully')
                 return render(request, "customer/product-details.html", context)
             else:
-                add_review = AddReview()
                 print("Invalid form")
+                context['add_review']=add_review
                 return render(request, "customer/product-details.html", context)
         else:
             return render(request, "customer/product-details.html", context)
@@ -137,19 +129,18 @@ def add_to_cart(request, **kwargs):
         'id': kwargs['id'],
         'pid': kwargs['pid'],
     }
-    Cart(user=user, product=product, quantity=1).save()
+    Cart(user_id=user, product_id=product, quantity=1).save()
     return redirect('cart', id=kwargs['id'])
 
 def cart(request, **kwargs):
     if request.user.is_authenticated:
         user = request.user
-        cartItems = Cart.objects.filter(user=user)
-        cart_product = [p for p in Cart.objects.all() if p.user == user]
+        cartItems = Cart.objects.filter(user_id=user)
+        cart_product = [p for p in Cart.objects.all() if p.user_id == user]
         print(cart_product)
         context = {
             'id': kwargs['id'],
             'cartItems': cartItems,
-
         }
         if cart_product:
             context.update(price_detail(user))
@@ -165,13 +156,13 @@ def price_detail(user):
     total_amount = 0.0
     price_data = {}
     # take the all rows of cart for logged in user
-    cart_product = [p for p in Cart.objects.all() if p.user == user]
+    cart_product = [p for p in Cart.objects.all() if p.user_id == user]
     print('***********', cart_product)
     print(len(cart_product))
     # calculate amount according to quantity
     #
     for p in cart_product:
-        temp_amount = (p.quantity * p.product.discount_price)
+        temp_amount = (p.quantity * p.product_id.discount_price)
         amount = amount + temp_amount
 
     cart_list = list(cart_product)
@@ -193,7 +184,7 @@ def price_detail(user):
 
 def account(request, **kwargs):
     user = request.user
-    address = Address.objects.filter(user=user)
+    address = Address.objects.filter(user_id=user)
     # user_create = UserCreate(instance=user)
     context = {
         'id': kwargs['id'],
@@ -212,7 +203,7 @@ def add_address(request, **kwargs):
         if address_form.is_valid():
             address_form = address_form.save(commit=False)
             user = request.user
-            address_form.user = user
+            address_form.user_id = user
             address_form.save()
             messages.success(request, 'Address saved')
             print("Address added")
@@ -237,7 +228,7 @@ def plus_cart(request):
         prod_id = request.GET['prod_id']
         print(prod_id)
         user = request.user
-        c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+        c = Cart.objects.get(Q(product_id=prod_id) & Q(user_id=request.user))
         c.quantity += 1
         c.save()
         data = {
@@ -254,7 +245,7 @@ def minus_cart(request):
         prod_id = request.GET['prod_id']
         print(prod_id)
         user = request.user
-        c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+        c = Cart.objects.get(Q(product_id=prod_id) & Q(user_id=request.user))
         c.quantity -= 1
         c.save()
 
@@ -271,13 +262,11 @@ def remove_cart(request):
         prod_id = request.GET['prod_id']
         print(prod_id)
         user = request.user
-        c = Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
-        # c.quantity-=1
-        # saving in db
+        c = Cart.objects.get(Q(product_id=prod_id) & Q(user_id=request.user))
         c.delete()
         data = {}
         data.update(price_detail(user))
-        cart_products = list(Cart.objects.filter(user=user))
+        cart_products = list(Cart.objects.filter(user_id=user))
         if(len(cart_products)==0):
             return redirect('cart', id=user.id)
         else:
@@ -289,9 +278,9 @@ def remove_cart(request):
 def checkout(request, **kwargs):
     user = request.user
     # payment_form = PaymentForm()
-    cart_items = Cart.objects.filter(user=user)
-    addresses = Address.objects.filter(user=user)
-    cart_product = [p for p in Cart.objects.all() if p.user == user]
+    cart_items = Cart.objects.filter(user_id=user)
+    addresses = Address.objects.filter(user_id=user)
+    cart_product = [p for p in Cart.objects.all() if p.user_id == user]
 
     context = {
         'id': kwargs['id'],
@@ -327,9 +316,9 @@ def payment(request, **kwargs):
         context['addr_id'] = custid
         messages.info(request, 'Please select or add your address in account')
         return redirect('checkout', id=user.id)
-    cart = Cart.objects.filter(user=user)
+    cart = Cart.objects.filter(user_id=user)
     context['addr_id']=custid
-    cart_product = [p for p in Cart.objects.all() if p.user == request.user]
+    cart_product = [p for p in Cart.objects.all() if p.user_id == request.user]
     print("payment")
     if cart_product:
         context.update(price_detail(user))
@@ -356,12 +345,12 @@ def do_payment(request, **kwargs):
         'addr_id': kwargs['addr_id'],
     }
     context.update(price_detail(user))
-    cart_items = Cart.objects.filter(user=user)
+    cart_items = Cart.objects.filter(user_id=user)
     try:
         address = Address.objects.get(id=custid)
     except Exception as e:
         return redirect('checkout', id=user.id)
-    cart_product = [p for p in Cart.objects.all() if p.user == request.user]
+    cart_product = [p for p in Cart.objects.all() if p.user_id == request.user]
     print("payment_done")
     if cart_product:
         context.update(price_detail(user))
@@ -388,13 +377,13 @@ def do_payment(request, **kwargs):
                 print("payment success")
                 if len(cart_items) > 1:
                     for c in cart_items:
-                        Order(user_id=user, product_id=c.product, payment_id=payment_form, address=address,
-                            quantity=c.quantity, date=timezone.now(), total_amount=(c.quantity * c.product.discount_price)).save()
+                        Order(user_id=user, product_id=c.product_id, payment_id=payment_form, address_id=address,
+                            quantity=c.quantity, date=timezone.now(), total_amount=(c.quantity * c.product_id.discount_price)).save()
                         c.delete()
                         print("Placed order")
                 else:
                     for c in cart_items:
-                        Order(user_id=user, product_id=c.product, payment_id=payment_form, address=address,
+                        Order(user_id=user, product_id=c.product_id, payment_id=payment_form, address_id=address,
                             quantity=c.quantity, date=timezone.now(), total_amount=context['total_amount']).save()
                         c.delete()
                         print("Placed order")
@@ -417,21 +406,21 @@ def do_payment(request, **kwargs):
             
             if len(cart_items) > 1:
                 for c in cart_items:
-                    total_amount = c.quantity * c.product.discount_price
+                    total_amount = c.quantity * c.product_id.discount_price
                     print(total_amount)
                     if total_amount <50000:
                         total_amount= total_amount + 40
-                    Order(user_id=user, product_id=c.product, payment_id=pay, address=address,
-                        quantity=c.quantity, date=timezone.now(), total_amount=(c.quantity * c.product.discount_price)).save()
+                    Order(user_id=user, product_id=c.product_id, payment_id=pay, address_id=address,
+                        quantity=c.quantity, date=timezone.now(), total_amount=(c.quantity * c.product_id.discount_price)).save()
                     c.delete()
                     print("Placed order")
             else:
                 for c in cart_items:
-                    total_amount = c.quantity * c.product.discount_price
+                    total_amount = c.quantity * c.product_id.discount_price
                     print(total_amount)
                     if total_amount <50000:
                         total_amount= total_amount + 40
-                    Order(user_id=user, product_id=c.product, payment_id=pay, address=address,
+                    Order(user_id=user, product_id=c.product_id, payment_id=pay, address_id=address,
                         quantity=c.quantity, date=timezone.now(), total_amount=context['total_amount']).save()
                     c.delete()
                     print("Placed order")

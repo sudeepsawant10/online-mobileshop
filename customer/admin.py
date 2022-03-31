@@ -4,7 +4,7 @@ from . models import Address, Product, Brand, Payment, Order, Cart, Review
 
 @admin.register(Address)
 class AddressModelAdmin(admin.ModelAdmin):
-    list_display = ['user', 'flat_no', 'building', 'area', 'city', 'pin']
+    list_display = ['user_id', 'flat_no', 'building', 'area', 'city', 'pin']
 
 
 @admin.register(Brand)
@@ -26,7 +26,7 @@ class OrderModelAdmin(admin.ModelAdmin):
 
 @admin.register(Cart)
 class CartModelAdmin(admin.ModelAdmin):
-    list_display = ['user', 'product', 'quantity']
+    list_display = ['user_id', 'product_id', 'quantity']
 
 @admin.register(Review)
 class ReviewModelAdmin(admin.ModelAdmin):

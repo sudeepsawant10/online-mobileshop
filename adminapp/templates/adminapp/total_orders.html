@@ -60,13 +60,15 @@
                 <div class="col-sm-2">
                     <div>User = {{order.user_id.first_name}} {{order.user_id.last_name}}</div>
                     <i>{{order.date}}</i>
+                    <p class="text-danger">Payment: <i>{{order.payment_id.payment_type}}</i></i><p>
+
                 </div>
-                <div class="col-sm-1">
+                <div class="col-sm-1 text-center">
                     <div>{{order.quantity}}</div>
                 </div>
                 <div class="col-sm-3">
-                    <div>{{order.address.flat_no}}, {{order.address.building}}, {{order.address.area}},
-                        {{order.address.city}} {{order.address.pin}}
+                    <div>{{order.address_id.flat_no}}, {{order.address_id.building}}, {{order.address_id.area}},
+                        {{order.address_id.city}} {{order.address_id.pin}}
                     </div>
                 </div>
                

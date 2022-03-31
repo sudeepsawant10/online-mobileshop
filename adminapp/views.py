@@ -10,7 +10,7 @@ from django.http import HttpResponse
 # Create your views here.
 def products(request, **kwargs):
     user = request.user
-    products = Product.objects.all()
+    products = Product.objects.all().order_by('brand_id')
     context = {
         'id':kwargs['id'],
         'products':products,
