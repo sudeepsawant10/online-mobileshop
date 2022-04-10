@@ -325,15 +325,6 @@ def payment(request, **kwargs):
     return render(request, 'customer/payment.html', context)
 
 
-def demo(request, **kwargs):
-    context = {
-        'id': kwargs['id'],
-        'addr_id': kwargs['addr_id'],
-    }
-    print(context)
-    return HttpResponse("demo")
-
-
 def do_payment(request, **kwargs):
     user = request.user
     custid = kwargs['addr_id']
