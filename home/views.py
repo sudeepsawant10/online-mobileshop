@@ -25,7 +25,6 @@ def index(request):
         'products':products,
         'all_products': all_products[:3],
     }
-    # print(context['products'])
     return render(request, 'home/index.html', context)
 
 def register(request):
@@ -39,9 +38,7 @@ def register(request):
             messages.success(request, 'Account created successfully.')
             return redirect('login')
         else:
-            # messages.errors(request, user_create_form.errors)
             context = {'user_create': user_create}
-            # add into form
             return render(request, 'home/register.html', context)
     user_create = UserCreate()
     context={

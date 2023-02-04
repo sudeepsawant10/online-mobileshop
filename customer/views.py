@@ -39,17 +39,13 @@ def search(request, **kwargs):
     if len(query) > 80:
         products = Product.objects.none()
     else:
-        query_lookup = (Q(model__icontains=query) | Q(
-            short_description__icontains=query))
+        query_lookup = (Q(model__icontains=query) | Q(short_description__icontains=query))
         get_products = Product.objects.filter(query_lookup)
         # get_description = Product.objects.filter(short_description__icontains=query)
         get_brand = Product.objects.filter(brand_id__name__icontains=query)
         products = get_products.union(get_brand)
         # products = products2.union(get_brand)
         print(products)
-
-    if products.count == 0:
-        messages.error("No search results found. Please refine your query")
 
     context = {
         'id': kwargs['id'],
@@ -66,13 +62,11 @@ def product_details(request, **kwargs):
     reviews = Review.objects.filter(product_id=product)
     # print(reviews)
     add_review = AddReview()
-    print(product.id)
     pid = product.id
     user = request.user
     if user.is_active:
         myorders = Order.objects.filter(Q(user_id=user) & Q(status='Delivered')).values('id','product_id')
         print("my orders = ", end=" ")
-        print(myorders)
         for mo in myorders:
             if pid == mo['product_id']:
                 print("product matched for review")
@@ -119,12 +113,9 @@ def product_details(request, **kwargs):
 
 
 def add_to_cart(request, **kwargs):
-    # we have to save data using prod_id
-
     user = request.user
     product_id = kwargs['pid']
     product = Product.objects.get(id=product_id)
-    # print("*************",product_id)
     context = {
         'id': kwargs['id'],
         'pid': kwargs['pid'],
@@ -157,10 +148,9 @@ def price_detail(user):
     price_data = {}
     # take the all rows of cart for logged in user
     cart_product = [p for p in Cart.objects.all() if p.user_id == user]
-    print('***********', cart_product)
     print(len(cart_product))
     # calculate amount according to quantity
-    #
+    
     for p in cart_product:
         temp_amount = (p.quantity * p.product_id.discount_price)
         amount = amount + temp_amount
@@ -285,15 +275,7 @@ def checkout(request, **kwargs):
     context = {
         'id': kwargs['id'],
         'addresses': addresses,
-        # 'payment_form':payment_form,
     }
-    payments = (
-        ('COD'),
-        ('UPI'),
-        ('Net Banking'),
-        ('Credit/Debit Card'),
-    )
-
     if cart_product:
         context.update(price_detail(user))
 
@@ -328,8 +310,6 @@ def payment(request, **kwargs):
 def do_payment(request, **kwargs):
     user = request.user
     custid = kwargs['addr_id']
-    print("***********************--------------*", custid)
-
     print("payment method called")
     context = {
         'id': kwargs['id'],
@@ -342,14 +322,11 @@ def do_payment(request, **kwargs):
     except Exception as e:
         return redirect('checkout', id=user.id)
     cart_product = [p for p in Cart.objects.all() if p.user_id == request.user]
-    print("payment_done")
     if cart_product:
         context.update(price_detail(user))
 
     payments = (
         ('COD'),
-        ('UPI'),
-        ('Net Banking'),
         ('Credit/Debit Card'),
     )
 
@@ -362,7 +339,7 @@ def do_payment(request, **kwargs):
                 print("valid")
                 payment_form = payment_form.save(commit=False)
                 payment_form.user_id = request.user
-                payment_form.payment_type = payments[3]
+                payment_form.payment_type = payments[1]
                 payment_form.amount = context['total_amount']
                 payment_form.save()
                 print("payment success")
@@ -437,11 +414,8 @@ def orders(request, **kwargs):
         'id': kwargs['id'],
         'orders': orders,
     }
-    if request.method == 'post':
-        print("post call in orders")
-        return render(request, 'customer/orders.html', context)
-    else:
-        return render(request, 'customer/orders.html', context)
+   
+    return render(request, 'customer/orders.html', context)
 
 def cancel_order(request, **kwargs):
     orders = Order.objects.filter(user_id=request.user)

@@ -42,17 +42,9 @@ $(".minus-cart").click(function () {
       console.log("MinusCart -> suceess");
       eml.innerText = data.quantity;
       quantity_value = data.quantity;
-      if (quantity_value >= 2) {
-        console.log("one value...." + data.quantity);
-        document.getElementsByClassName("minus-cart").disabled = true;
-        // document.getElementById("amount").innerText = data.amount
-        // document.getElementById("total_amount").innerText = data.total_amount
-      }
-
       // document.getElementById("fa-minus-square").disabled = false;
       document.getElementById("amount").innerText = data.amount;
-      document.getElementById("delivery-charges").innerText =
-        data.delivery_charges;
+      document.getElementById("delivery-charges").innerText = data.delivery_charges;
       document.getElementById("total_amount").innerText = data.total_amount;
     },
   });
