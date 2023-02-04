@@ -1,1 +1,1 @@
-web: gunicorn mobileshop.wsgi --log-file -
+web:  gunicorn mobileshop.wsgi --log-file -
